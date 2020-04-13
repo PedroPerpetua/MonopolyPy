@@ -7,7 +7,7 @@ from libs.UI.items.number_picker import NumberPicker
 BG_COLOR = (143, 188, 114)
 RALEWAY = "libs/Raleway.ttf"
 
-class Server_MainScreen:
+class Server_StartScreen:
 	def __init__(self, window):
 		self.win = window
 		self.bg_color = BG_COLOR
@@ -67,4 +67,19 @@ class Server_MainScreen:
 			return False
 		return True
 
-		
+	def get_values(self):
+		''' Returns a list with the following indexes - keys:
+			0 -> host (string)
+			1 -> port (int)
+			2 -> password (string)
+			3 -> number of players (int)
+		'''
+		values = []
+		for item in self.items["input_box"]:
+			values += [self.items["input_box"][item].get_text()]
+		values[1] = int(values[1])
+		values += [self.items["number_drop"]["players"].get_number()]
+		return values
+
+	def check_end(self):
+		return self.items["text_button"]["start"].get_clicked()

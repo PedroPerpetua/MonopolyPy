@@ -21,12 +21,26 @@ class Server:
 		self.addr = (host, port)
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.clients = []
+
+		self.ids = [None for _ in range(max_players)]
 		self.players_ready = 0
 
 		self.game = None
 		self.ingame = False
 		self.requests = []
 
+	def get_empty_slot(self):
+		for i in range(self.MAX_PLAYERS):
+			if self.ids[i] == None:
+				return i
+		return -1
+
+	def get_client_slot(self, client):
+		for i in range(self.MAX_PLAYERS):
+			if self.ids[i]:
+				if self.ids[i][0] == client:
+					return i
+		return -1
 
 	def send_data(self, client, data):
 		try:
@@ -62,26 +76,24 @@ class Server:
 			self.players_ready += -1
 		if client in self.clients:
 			self.clients.remove(client)
+		slot = self.get_client_slot(client)
+		if slot != -1:
+			self.ids[slot] = None
 		client.shutdown()
 
 
 	def look_for_players(self):
 		self.active = True
-		def count_ready():
-			ready = -1
-			while self.players_ready != self.MAX_PLAYERS and self.active:
-				if ready != self.players_ready:
-					ready = self.players_ready
-					print(cs.red("[SERVER]") + f" {ready}/{self.MAX_PLAYERS} ready...")
-		print_counter = threading.Thread(target=count_ready)
-		print_counter.start()
 
+		# Prepares the socket
 		try:
 			self.socket.bind(self.addr)
 		except socket.error as se:
 			print(cs.red("[SERVER]") + f" Socket error: {str(se)}")
-		self.socket.settimeout(1)	
+		self.socket.settimeout(1)
 		self.socket.listen(0)
+
+		# Main loop looking for connections
 		print(cs.red("[SERVER]") + " Awaiting connections...")
 		while self.active and self.players_ready != self.MAX_PLAYERS:
 			try:
@@ -92,6 +104,8 @@ class Server:
 					self.disconnect(new_client, "SERVER FULL")
 				elif self.authenticate(new_client):
 					print(cs.red("[CONNECTION]") + f" It passed authentication! Welcome {new_client}.")
+					slot = self.get_empty_slot()
+					self.ids[slot] = [new_client, []]
 					self.clients.append(new_client)
 					new_client.start()
 				else:
@@ -101,7 +115,7 @@ class Server:
 			except socket.error as se:
 				print(cs.red("[SERVER]") + f" Socket error: {str(se)}")
 		if self.active:
-			print(cs.red("[SERVER]") + " I HAVE 4 PLAYERS CONNECTED AND READY!")
+			print(cs.red("[SERVER]") + f" I HAVE {self.MAX_PLAYERS} PLAYERS CONNECTED AND READY!")
 			self.socket.close()
 
 
@@ -123,26 +137,14 @@ class Server:
 		response = client.receive_data()
 		return response
 
-
-	def start_game(self):
-		print(cs.red("[GAME]") + " Game starting!")
-		clients_ids = []
-		counter = 0
-		for client in self.clients:
-			client.id[0] = counter
-			counter += 1
-			clients_ids.append(client.id[1:])
-
-		self.game = Game(clients_ids, self.MAX_PLAYERS, self)
-		for client in self.clients:
-			self.send_data(client, "GAME_START")
-		self.send_game_state()
-		if self.active:
-			self.ingame = True
-			thread = threading.Thread(target=self.processing_thread)
-			thread.start()
-		while self.active:
-			continue
+	def get_players(self):
+		players = []
+		for i in range(self.MAX_PLAYERS):
+			if self.ids[i] == None:
+				players += [None]
+			else:
+				players += [self.ids[i][1]]
+		return players
 
 	def log_requests(self):
 		print(cs.red("[SERVER]") + " Logging requests.")
@@ -203,12 +205,15 @@ class Client:
 	def processing_thread(self):
 		print(self.log() + " Started processing thread.")
 
+		# Receive name and icon
 		print(self.log() + " Awaiting name and icon...")
 		name = self.receive_data()
 		icon = self.receive_data()
 		if name == -1 or icon == -1:
 			self.server.disconnect(self, "Invalid name or icon - DISCONNECTED")
 		self.id = [None, name, icon]
+		slot = self.server.get_client_slot(self)
+		self.server.ids[slot] = [self, [icon, name]]
 		self.server.players_ready += 1
 
 		self.active = True
@@ -236,22 +241,3 @@ class Client:
 			return cs.yellow(self.id[1])
 		else:
 			return cs.yellow(self.addr) 
-
-
-def main():
-	draw_screen()
-	server = Server(HOST, PORT, PASSWORD, MAX_PLAYERS)
-	try:
-		server.look_for_players()
-		server.start_game()
-	except KeyboardInterrupt:
-		server.close_server()
-
-
-def draw_screen():
-	pygame.init()
-	win = pygame.display.set_mode((800, 800))
-	pygame.display.set_caption("MonopolyPy Server")
-
-if __name__ == "__main__":
-	main()

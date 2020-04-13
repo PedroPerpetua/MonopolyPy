@@ -122,8 +122,8 @@ def main():
 			if SERVER != None:
 				name = input("Please insert your name -> ")
 				network.send_data(name)
-				icon = input("Please insert your icon -> ")
-				network.send_data(icon)
+				icon = input("Please insert your icon (id) -> ")
+				network.send_data(int(icon))
 		elif command[0] == 's':
 			network.send_data(command[2:])
 		elif command[0] == 'd':
