@@ -5,7 +5,7 @@ import json
 from game.game import Game
 
 SERVER = None
-
+MESSAGE_SIZE = 8192
 class Network:
 	def __init__(self, server, port):
 		self.client = None
@@ -64,7 +64,7 @@ class Network:
 		global SERVER
 		if SERVER != None:
 			try:
-				data = self.client.recv(1024).decode()
+				data = self.client.recv(MESSAGE_SIZE).decode()
 				if data != "":
 					data = json.loads(data)
 					print(cs.red("[DATA]") + f" Received <{data}>.")
@@ -80,7 +80,7 @@ class Network:
 		global SERVER
 		if SERVER != None:
 			try:
-				game = self.client.recv(1024).decode()
+				game = self.client.recv(MESSAGE_SIZE).decode()
 				if game != "":
 					game = json.loads(game)
 					print(cs.red("[DATA]") + " RECEIVED A GAME UPDATE")

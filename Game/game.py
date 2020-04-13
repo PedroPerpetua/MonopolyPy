@@ -1,14 +1,15 @@
 from game.player import Player
 import json
-#from game.field import *
+from game.fields import *
 
 FIELDS_FILE = "game/fields.txt"
 
 class Game:
-	def __init__(self, id_list=[], num_players=0):
+	def __init__(self, id_list=[], num_players=0, server=None):
 		self.players = self.create_players(id_list)
+		self.fields = self.import_fields(FIELDS_FILE)
 		self.MAX_PLAYERS = num_players
-		#self.fields = self.import_fields(FIELDS_FILE)
+		self.server = server
 		self.current_player = 0
 
 	def create_players(self, id_list):
@@ -17,26 +18,28 @@ class Game:
 			player_list.append(Player(pair[0], pair[1]))
 		return player_list
 
-	# def import_fields(self, file):
-	# 	field_list = []
-	# 	with open(file, "r") as in_file:
-	# 		for line in in_file:
-	# 			if line[0] == "#":
-	# 				pass
-	# 			else:
-	# 				args = line.split("|")
-	# 				if args[0] == "P":
-	# 					taxes = []
-	# 					for number in args[5].split(","):
-	# 						taxes.append(int(number))
-	# 					field_list.append(Property(args[1],args[2],args[3],args[4],taxes))
-	# 				elif args[0] == "R":
-	# 					field_list.append(Railroad(args[1]))
-	# 				elif args[0] == "U":
-	# 					field_list.append(Utility(args[1]))
-	# 				elif args[0] == "S":
-	# 					field_list.append(Special_Field(args[1]))
-	# 	return field_list
+	def import_fields(self, file):
+		field_list = []
+		with open(file, "r") as in_file:
+			for line in in_file:
+				if line[0] == "#":
+					pass
+				else:
+					args = line.split("|")
+					if args[0] == "P":
+						taxes = []
+						for number in args[5].split(","):
+							taxes.append(int(number))
+						field_list.append(Property(args[1],args[2],args[3],args[4],taxes))
+					elif args[0] == "R":
+						field_list.append(Railroad(args[1]))
+					elif args[0] == "U":
+						field_list.append(Utility(args[1]))
+					elif args[0] == "W":
+						field_list.append(WildcardField(args[1]))
+					elif args[0] == "S":
+						field_list.append(SpecialField(args[1]))
+		return field_list
 
 
 	def serialize(self):
@@ -46,6 +49,9 @@ class Game:
 		info["players"] = {}
 		for i in range(self.MAX_PLAYERS):
 			info["players"][i] = self.players[i].serialize()
+		info["fields"] = {}
+		for i in range(len(self.fields)):
+			info["fields"][i] = self.fields[i].serialize()
 		return info
 
 	def deserialize(info):
@@ -55,6 +61,9 @@ class Game:
 		result.players = []
 		for player in info["players"]:
 			result.players.append(Player.deserialize(info["players"][player]))
+		result.fields = []
+		for field in info["fields"]:
+			result.fields.append(Field.field_deserialize(info["fields"][field]))
 		return result
 
 
@@ -62,12 +71,18 @@ class Game:
 		player = self.players[player_id]
 		return f"player {player}: {request}"
 
+	def send_request(self, player_id, request):
+		response = self.server.receive_request(player_id, request)
+		return response
+
+
 	def pass_turn(self):
 		self.current_player = (self.current_player + 1) % self.MAX_PLAYERS
 
 
 	def __str__(self):
 		text = "Monopoly Game!\n"
+		text += f"Num of fields: {str(len(self.fields))}\n"
 		text += "Players:\n"
 		for player in self.players:
 			text += f"\t{player.name} @ postition {str(player.pos)}\n"
