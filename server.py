@@ -16,7 +16,7 @@ def setup_window():
 	return win
 
 def start_server(server):
-	server.look_for_players()
+	server.search_players()
 
 # MAIN APPLICATION LOOP
 def main():
@@ -58,12 +58,12 @@ def main():
 		for event in events:
 			if event.type == pygame.QUIT:
 				pygame.quit()
-				server.close_server()
+				server.close_server("PG QUIT")
 				exit(0)
 		screen.update(events)
 		
 		# EVENTS INSIDE THIS SCREEN
-		screen.update_players(server.get_players())
+		screen.update_players(server.get_tags())
 
 		screen.draw()
 		pygame.display.update()
