@@ -1,7 +1,7 @@
 STARTING_MONEY = 1500
 
 class Player:
-	def __init__(self, name="", icon=''):
+	def __init__(self, icon, name):
 		self.name = name
 		self.icon = icon
 		self.pos = 0

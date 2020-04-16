@@ -3,6 +3,7 @@ from threading import Thread
 from libs.server import Server
 from libs.UI.server_start_screen import Server_StartScreen
 from libs.UI.server_waiting_players_screen import Server_WaitingPlayersScreen
+from libs.UI.server_ingame_screen import Server_IngameScreen
 
 WIN_W = 300
 WIN_H = 294
@@ -17,6 +18,7 @@ def setup_window():
 
 def start_server(server):
 	server.search_players()
+	server.start_game()
 
 # MAIN APPLICATION LOOP
 def main():
@@ -51,7 +53,6 @@ def main():
 	# WAITING FOR PLAYERS SCREEN
 	screen = Server_WaitingPlayersScreen(win, values[3])
 	waiting_players_screen = True
-	
 	while waiting_players_screen:
 		pygame.time.delay(100)
 		events = pygame.event.get()
@@ -64,12 +65,38 @@ def main():
 		
 		# EVENTS INSIDE THIS SCREEN
 		screen.update_players(server.get_tags())
+		if server.game:
+			waiting_players_screen = False
 
 		screen.draw()
 		pygame.display.update()
 
+	# IN GAME SCREEN
+	screen = Server_IngameScreen(win)
+	ingame_screen = True
+	while ingame_screen:
+		pygame.time.delay(100)
+		events = pygame.event.get()
+		for event in events:
+			if event.type == pygame.QUIT:
+				pygame.quit()
+				server.close_server("PG QUIT")
+				exit(0)
+		screen.update(events)
+
+		# EVENTS INSIDE THIS SCREEN
+		if screen.check_quit():
+			pygame.quit()
+			server.close_server("PG QUIT")
+			exit(0)
+
+		screen.draw()
+		pygame.display.update()
+
+
 	# END
 	pygame.quit()
+	server.close_server("END OF PROGRAM")
 
 if __name__ == "__main__":
 	main()

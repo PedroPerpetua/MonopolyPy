@@ -141,7 +141,7 @@ class Server:
 			server_socket.close()
 
 	def start_game(self):
-		pass
+		self.game = True
 
 	# Main thread handling communication and requests
 	def processing_thread(self):

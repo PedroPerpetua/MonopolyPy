@@ -15,13 +15,11 @@ class Server_WaitingPlayersScreen:
 		items["image_asset"] = {}
 		items["image_asset"]["logo"] = ImageAsset(150, 50, "server_logo", "C")
 		items["player_box"] = {}
-		i = 1
-		while i < 9: # So it loops over 8 items - array starts at 1
+		for i in range(1, 9): # So it loops over 8 items - array starts at 1
 			if i <= self.slots:
 				items["player_box"]["player" + str(i)] = PlayerBox(i, False)
 			else:
 				items["player_box"]["player" + str(i)] = PlayerBox(i, True)
-			i += 1
 		return items
 
 	def draw(self):

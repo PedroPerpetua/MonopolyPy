@@ -38,5 +38,5 @@ P|Bond Street|320|green|200|28,150,450,1000,1200,1400
 R|Railroad 4
 W|Luck
 P|Park Lane|350|blue|200|35,175,500,1100,1300,1500
-S|Luxyry Tax
+S|Luxury Tax
 P|Mayfair|400|blue|200|50,200,600,1400,1700,2000

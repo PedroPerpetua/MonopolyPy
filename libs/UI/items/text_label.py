@@ -4,7 +4,7 @@ import os.path
 TEXT_COLOR = BLACK = (0,0,0)
 
 class TextLabel:
-	def __init__(self, x, y, text, font_size, font, alignment="C"):
+	def __init__(self, x, y, text, font_size, font, alignment="L"):
 		# Text related vars:
 		if not os.path.isfile(font):
 			font = pg.font.match_font(font)

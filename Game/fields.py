@@ -24,6 +24,16 @@ class Property:
 		self.houses = 0
 		self.mortaged = False
 
+	def get_type(self):
+		return "Property"
+
+	def get_board_attributes(self):
+		return [self.color, self.houses, self.mortaged]
+
+	def get_tooltip_attributes(self):
+		return [self.name, self.owner_id, self.taxes]
+
+
 	def serialize(self):
 		info = vars(self)
 		info["tag"] = "P"
@@ -44,6 +54,12 @@ class Railroad:
 
 		self.owner_id = None
 
+	def get_type(self):
+		return "Railroad"
+
+	def get_board_attributes(self):
+		return [self.name, self.price]
+
 	def serialize(self):
 		info = vars(self)
 		info["tag"] = "R"
@@ -59,8 +75,15 @@ class Railroad:
 class Utility:
 	def __init__(self, name=""):
 		self.name = name
-
+		self.price = 150
 		self.owner_id = None
+
+
+	def get_type(self):
+		return self.name
+
+	def get_board_attributes(self):
+		return [self.name, self.price]
 
 	def serialize(self):
 		info = vars(self)
@@ -78,6 +101,14 @@ class WildcardField:
 	def __init__(self, card_type=""):
 		self.card_type = card_type
 
+
+	def get_type(self):
+		return self.card_type
+
+	def get_board_attributes(self):
+		return None
+
+
 	def serialize(self):
 		info = vars(self)
 		info["tag"] = "W"
@@ -93,6 +124,12 @@ class WildcardField:
 class SpecialField:
 	def __init__(self, field_type=""):
 		self.field_type = field_type
+
+	def get_type(self):
+		return self.field_type
+
+	def get_board_attributes(self):
+		return None
 
 	def serialize(self):
 		info = vars(self)

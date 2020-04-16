@@ -25,7 +25,7 @@ class Game:
 				if line[0] == "#":
 					pass
 				else:
-					args = line.split("|")
+					args = line[:-1].split("|")
 					if args[0] == "P":
 						taxes = []
 						for number in args[5].split(","):
@@ -40,6 +40,17 @@ class Game:
 					elif args[0] == "S":
 						field_list.append(SpecialField(args[1]))
 		return field_list
+
+	def get_type(self, filed_pos):
+		return self.fields[filed_pos].get_type()
+
+	def get_board_info(self, field_pos):
+		field = self.fields[field_pos]
+		icons = []
+		for player in self.players:
+			if player.pos == field_pos:
+				icons.append(player.icon)
+		return [field.get_board_attributes(), icons]
 
 
 	def serialize(self):
@@ -74,6 +85,9 @@ class Game:
 	def send_request(self, player_id, request):
 		response = self.server.receive_request(player_id, request)
 		return response
+
+
+
 
 
 	def pass_turn(self):
