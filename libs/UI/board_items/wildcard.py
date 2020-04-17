@@ -2,6 +2,7 @@ import pygame as pg
 
 COLORKEY = (255, 0, 255)
 LIGHT_RED = (255, 102, 102)
+WHITE = (255, 255, 255)
 LIGHT_BLUE = (153, 204, 255)
 TOP = 80
 SIZE = 129
@@ -19,10 +20,10 @@ class BoardWildCard:
 
 		if w_type == "Luck":
 			icon = pg.image.load("libs/assets/luck.png").convert()
-			self.surface.fill(LIGHT_RED)
+			self.surface.fill(WHITE)
 		elif w_type == "Community Chest":
 			icon = pg.image.load("libs/assets/community_chest.png").convert()
-			self.surface.fill(LIGHT_BLUE)
+			self.surface.fill(WHITE)
 		icon.set_colorkey(COLORKEY)
 		
 		self.surface.blit(icon, (icon_x, icon_y))
@@ -30,5 +31,8 @@ class BoardWildCard:
 	def update(self, _):
 		pass
 
-	def get_surface(self):
+	def draw_players(self, player_list):
+		pass
+
+	def get_surface(self, player_list):
 		return self.surface

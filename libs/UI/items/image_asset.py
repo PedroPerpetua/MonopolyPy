@@ -16,5 +16,5 @@ class ImageAsset:
 	def draw(self, window):
 		window.blit(self.image, (self.x, self.y))
 
-	def update(self, events):
+	def update(self, _):
 		pass

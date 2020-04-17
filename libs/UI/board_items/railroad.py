@@ -23,5 +23,8 @@ class BoardRailroad:
 	def update(self, _):
 		pass
 
-	def get_surface(self):
+	def draw_players(self, player_list):
+		pass
+
+	def get_surface(self, player_list):
 		return self.surface

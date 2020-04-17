@@ -1,7 +1,7 @@
 import pygame as pg
 
 COLORKEY = (255, 0, 255)
-BG_COLOR = LIGHT_PURPLE = (255, 178, 102)
+BG_COLOR = LIGHT_PURPLE = (153, 255, 255)
 TOP = 80
 SIZE = 129
 
@@ -28,5 +28,8 @@ class BoardUtility:
 	def update(self, _):
 		pass
 
-	def get_surface(self):
+	def draw_players(self, player_list):
+		pass
+
+	def get_surface(self, player_list):
 		return self.surface

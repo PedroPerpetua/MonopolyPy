@@ -5,10 +5,10 @@ from game.fields import *
 FIELDS_FILE = "game/fields.txt"
 
 class Game:
-	def __init__(self, id_list=[], num_players=0, server=None):
+	def __init__(self, id_list=[], server=None):
 		self.players = self.create_players(id_list)
 		self.fields = self.import_fields(FIELDS_FILE)
-		self.MAX_PLAYERS = num_players
+		self.MAX_PLAYERS = len(id_list)
 		self.server = server
 		self.current_player = 0
 
@@ -44,7 +44,7 @@ class Game:
 	def get_type(self, filed_pos):
 		return self.fields[filed_pos].get_type()
 
-	def get_board_info(self, field_pos):
+	def get_info(self, field_pos):
 		field = self.fields[field_pos]
 		icons = []
 		for player in self.players:

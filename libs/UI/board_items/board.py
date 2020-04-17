@@ -72,14 +72,13 @@ class Board:
 
 	def draw_tile(self, window, pos):
 		x, y = POSITIONS[pos]
-		x = x + self.x
-		y = y + self.y
-		
+		x = x + self.x + 1
+		y = y + self.y + 1
+		# First we draw the tile
 		tile = self.tiles[pos]
-		info = self.game.get_board_info(pos)
-		tile.update(info[0])
-		window.blit(tile.get_surface(), (x+1, y+1))
-
+		info, players = self.game.get_info(pos)
+		tile.update(info)
+		window.blit(tile.get_surface(players), (x, y))
 
 	def draw(self, window):
 		self.draw_border(window)

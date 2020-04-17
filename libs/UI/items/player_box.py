@@ -49,7 +49,7 @@ class PlayerBox:
 					window.blit(self.icon, (box.left, box.top))
 					window.blit(self.name, (box.left + 33 + 6, box.top + 6))
 
-	def update(self, events):
+	def update(self, _):
 		self.cycle_clock.tick()
 
 	def update_dots(self):

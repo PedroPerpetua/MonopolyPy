@@ -23,5 +23,5 @@ class TextLabel:
 	def draw(self, window):
 		window.blit(self.surface, (self.x, self.y))
 
-	def update(self, events):
+	def update(self, _):
 		pass
