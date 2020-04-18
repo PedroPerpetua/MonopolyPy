@@ -1,7 +1,7 @@
 import socket, select
 import json
 from threading import Thread
-import libs.colors as cs
+import lib.colors as cs
 
 MESSAGE_SIZE = 1024
 

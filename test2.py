@@ -1,8 +1,44 @@
-POSITIONS = [
-			(774,774), (702,774), (630, 774), (558, 774), (486, 774), (414, 774), (342, 774), (270, 774), (198, 774), (126, 774), (0, 774),
-			(0, 702), (0, 630), (0, 558), (0, 486), (0, 414), (0, 342), (0, 270), (0, 198), (0, 126), (0, 0),
-			(126, 0), (198, 0), (270, 0), (342, 0), (414, 0), (486, 0), (558, 0), (630, 0), (702, 0), (774, 0),
-			(774, 126), (774, 198), (774, 270), (774, 342), (774, 414), (774, 486), (774, 558), (774, 630), (774, 702)
-			]
+import pygame
+from lib.assets import Assets, import_assets
+from lib.UI.items.imagebutton import ImageButton
 
-print(len(POSITIONS))
+BG_COLOR = (143,188,114)
+
+def setup_window():
+	win = pygame.display.set_mode((0,0), pygame.FULLSCREEN)
+	import_assets("Server")
+	pygame.display.set_icon(Assets.SERVER_ICON)
+	return win
+
+
+def main():
+	pygame.init()
+	print(pygame.display.Info())
+	win = setup_window()
+	win.fill((143,188,114))
+
+	button = ImageButton(10, 10, Assets.START_SELECTED, Assets.START_UNSELECTED, False)
+	
+	run = True
+	while run:
+		pygame.time.delay(100)
+		events = pygame.event.get()
+		for event in events:
+			if event.type == pygame.QUIT:
+				exit(0)
+			if event.type == pygame.KEYDOWN:
+				if event.key == pygame.K_ESCAPE:
+					exit(0)
+
+		button.update(events)
+		win.fill(BG_COLOR)
+		button.draw(win)
+
+		if button.get_clicked():
+			print("CLICK!")
+		pygame.display.update()
+
+	pygame.quit()
+
+if __name__ == "__main__":
+	main()

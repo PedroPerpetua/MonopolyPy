@@ -1,6 +1,6 @@
-from game.player import Player
 import json
-from game.fields import *
+from src.game.player import Player
+from src.game.fields import *
 
 FIELDS_FILE = "game/fields.txt"
 
@@ -47,10 +47,13 @@ class Game:
 	def get_info(self, field_pos):
 		field = self.fields[field_pos]
 		icons = []
+		jailed = []
 		for player in self.players:
-			if player.pos == field_pos:
+			if player.is_jailed() and field_pos == 10 and player.pos == 10:
+				jailed.append(player.icon)
+			elif player.pos == field_pos:
 				icons.append(player.icon)
-		return [field.get_board_attributes(), icons]
+		return [field.get_board_attributes(), icons, jailed]
 
 
 	def serialize(self):

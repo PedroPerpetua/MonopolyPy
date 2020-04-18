@@ -1,8 +1,8 @@
 import socket, select
 import threading
-from libs import colors as cs
+from lib import colors as cs
 import json
-from game.game import Game
+from src.game.game import Game
 
 SERVER = None
 MESSAGE_SIZE = 8192

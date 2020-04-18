@@ -11,6 +11,10 @@ class Player:
 		self.jail_counter = 0
 		self.jail_card = 0
 
+
+	def is_jailed(self):
+		return self.jail_counter != 0
+
 	def serialize(self):
 		return vars(self)
 

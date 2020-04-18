@@ -1,32 +1,33 @@
 import pygame
+pygame.init()
+win = pygame.display.set_mode((300, 294))
+
 from threading import Thread
-from libs.server import Server
-from libs.UI.server_start_screen import Server_StartScreen
-from libs.UI.server_waiting_players_screen import Server_WaitingPlayersScreen
-from libs.UI.server_ingame_screen import Server_IngameScreen
+from lib.assets import Assets, import_assets
+from src.server_screens import StartScreen, QueueScreen, InGameScreen
+from src.server import Server
 
 WIN_W = 300
-WIN_H = 294
+WIN_H = 300
+
+def server_thread(server):
+	server.run()
 
 def setup_window():
 	win = pygame.display.set_mode((WIN_W, WIN_H))
+	import_assets("Server")
 	pygame.display.set_caption("Monopoly server")
-	icon = pygame.image.load("libs/assets/server_app_icon.png")
-	icon.set_colorkey((255,0,255))
+	icon = Assets.APP_ICON
 	pygame.display.set_icon(icon)
 	return win
-
-def start_server(server):
-	server.search_players()
-	server.start_game()
 
 # MAIN APPLICATION LOOP
 def main():
 	pygame.init()
 	win = setup_window()
-
+	
 	# START SCREEN
-	screen = Server_StartScreen(win)
+	screen = StartScreen()
 	start_screen = True
 	while start_screen:
 		pygame.time.delay(100)
@@ -40,18 +41,17 @@ def main():
 		# EVENTS INSIDE THIS SCREEN
 		if screen.check_end():
 			start_screen = False
-
-		screen.draw()
+		screen.draw(win)
 		pygame.display.update()
 
 	# PROCESSES DATA AND CREATES THE SERVER
 	values = screen.get_values()
 	server = Server(values[0], values[1], values[2], values[3])
-	server_thread = Thread(target=start_server, args=[server])
-	server_thread.start()
+	thread = Thread(target=server_thread, args=[server])
+	thread.start()
 
 	# WAITING FOR PLAYERS SCREEN
-	screen = Server_WaitingPlayersScreen(win, values[3])
+	screen = QueueScreen(values[3])
 	waiting_players_screen = True
 	while waiting_players_screen:
 		pygame.time.delay(100)
@@ -68,11 +68,11 @@ def main():
 		if server.game:
 			waiting_players_screen = False
 
-		screen.draw()
+		screen.draw(win)
 		pygame.display.update()
 
 	# IN GAME SCREEN
-	screen = Server_IngameScreen(win)
+	screen = InGameScreen()
 	ingame_screen = True
 	while ingame_screen:
 		pygame.time.delay(100)
@@ -85,12 +85,12 @@ def main():
 		screen.update(events)
 
 		# EVENTS INSIDE THIS SCREEN
-		if screen.check_quit():
+		if screen.check_end():
 			pygame.quit()
 			server.close_server("PG QUIT")
 			exit(0)
 
-		screen.draw()
+		screen.draw(win)
 		pygame.display.update()
 
 

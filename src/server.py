@@ -3,9 +3,9 @@ import threading
 import json
 from time import time
 
-from libs.logger import write_log
-from libs.client import Client
-from libs import colors as cs
+from lib import colors as cs
+from src.logger import write_log
+from src.client import Client
 
 # Tag constants for readability:
 CLIENT = 0
@@ -154,3 +154,7 @@ class Server:
 			if tag[CLIENT]:
 				self.disconnect(tag, message)
 		write_log(self.requests)
+
+	def run(self):
+		self.search_players()
+		self.start_game()
