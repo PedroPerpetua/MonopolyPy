@@ -93,7 +93,6 @@ def main():
 		screen.draw(win)
 		pygame.display.update()
 
-
 	# END
 	pygame.quit()
 	server.close_server("END OF PROGRAM")
