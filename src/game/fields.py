@@ -28,7 +28,7 @@ class Property:
 		return "Property"
 
 	def get_board_attributes(self):
-		return [self.color, self.houses, self.mortaged]
+		return [self.houses, self.mortaged]
 
 	def get_tooltip_attributes(self):
 		return [self.name, self.owner_id, self.taxes]

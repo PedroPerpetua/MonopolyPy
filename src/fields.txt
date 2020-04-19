@@ -1,0 +1,42 @@
+# Fields to be imported.
+# Format: Type|Name|Cost|Color|House Price|Tax Values
+S|Start
+P|Old Kent Road|60|brown|50|2,10,30,90,160,250
+W|Community Chest
+P|Whitechapel Road|60|brown|50|4,20,60,180,230,450
+S|Income Tax
+R|Railroad 1
+P|The Angel, Islington|100|light-blue|50|6,30,90,270,400,550
+W|Luck
+P|Euston Road|100|light-blue|50|6,30,90,270,400,550
+P|Pentonville Road|120|light-blue|50|8,40,100,300,450,600
+S|Jail
+P|Pall Mall|140|magenta|100|10,50,150,450,625,750
+U|Electric Company
+P|Whitehall|140|magenta|100|10,50,150,450,625,750
+P|Northumberland Avenue|160|magenta|100|12,60,180,500,700,900
+R|Railroad 2
+P|Bow Street|180|orange|100|14,70,200,550,750,950
+W|Community Chest
+P|Marlborough Street|180|orange|100|14,70,200,550,750,950
+P|Vine Street|200|orange|100|16,80,220,600,800,1000
+S|Free Parking
+P|Strand|220|red|150|18,90,250,700,875,1050
+W|Luck
+P|Fleet Street|220|red|150|18,90,250,700,875,1050
+P|Trafalgar Square|240|red|150|20,100,300,750,925,1100
+R|Railroad 3
+P|Leicester Square|260|yellow|150|22,110,330,800,975,1150
+P|Coventry Street|260|yellow|150|22,110,330,800,975,1150
+U|Water Company
+P|Piccadilly|280|yellow|150|24,120,360,850,1025,1200
+S|Go to jail!
+P|Regent Street|300|green|200|26,130,390,900,1100,1275
+P|Oxford Street|300|green|200|26,130,390,900,1100,1275
+W|Community Chest
+P|Bond Street|320|green|200|28,150,450,1000,1200,1400
+R|Railroad 4
+W|Luck
+P|Park Lane|350|blue|200|35,175,500,1100,1300,1500
+S|Luxury Tax
+P|Mayfair|400|blue|200|50,200,600,1400,1700,2000
