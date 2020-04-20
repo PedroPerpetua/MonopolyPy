@@ -8,9 +8,9 @@ from lib.assets import Assets
 
 
 # NOTE: SIZES ARE SCALLED TO 1920:1080 SCREENS
-SIZE = 1000
-SIDE = 131
-TOP = 82
+SIZE = 700
+SIDE = 98
+TOP = 56
 
 BORDER_COLOR = BLACK = (0,0,0)
 LIGHT_GRAY = (128, 128, 128)
@@ -18,10 +18,10 @@ LIGHT_CYAN = (153, 255, 255)
 WHITE = (255,255,255)
 
 POSITIONS = [
-			(869,869), (787,869), (705, 869), (623, 869), (541, 869), (459, 869), (377, 869), (295, 869), (213, 869), (131, 869),
-			(0, 869), (0, 787), (0, 705), (0, 623), (0, 541), (0, 459), (0, 377), (0, 295), (0, 213), (0, 131), (0, 0),
-			(131, 0), (213, 0), (295, 0), (377, 0), (459, 0), (541, 0), (623, 0), (705, 0), (787, 0), (869, 0),
-			(869, 131), (869, 213), (869, 295), (869, 377), (869, 459), (869, 541), (869, 623), (869, 705), (869, 787)
+			(602,602), (546,602), (490, 602), (434, 602), (378, 602), (322, 602), (266, 602), (210, 602), (154, 602), (98, 602),
+			(0, 602), (0, 546), (0, 490), (0, 434), (0, 378), (0, 322), (0, 266), (0, 210), (0, 154), (0, 98), (0, 0),
+			(98, 0), (154, 0), (210, 0), (266, 0), (322, 0), (378, 0), (434, 0), (490, 0), (546, 0), (602, 0),
+			(602, 98), (602, 154), (602, 210), (602, 266), (602, 322), (602, 378), (602, 434), (602, 490), (602, 546)
 			]
 
 
@@ -94,11 +94,18 @@ class Board:
 			self.tiles[pos].update_info(info)
 			self.tiles[pos].draw(window, players)
 
+	def draw_tooltip(self, window, pos):
+		self.tiles[pos].draw_tooltip(window)
+
 	def draw(self, window):
 		self.draw_border(window)
 		for i in range(40):
 			self.draw_tile(window, i)
+		# We can only check for tooltips after we've drawn all of them, so it's always on top
+		for i in range(40):
+			self.draw_tooltip(window, i)
 
 	def update(self, events):
-		pass
+		for i in range(40):
+			self.tiles[i].update(events)
 
