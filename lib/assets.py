@@ -19,6 +19,7 @@ class Assets:
 	APP_LOGO = None
 
 	ARIAL = None
+	PIXEL = None
 
 	# Server Specific
 	LOCKED_SLOT = None
@@ -31,7 +32,7 @@ class Assets:
 	GAME_STARTED = None
 	QUIT_SELECTED = None
 	QUIT_UNSELECTED = None
-	PIXEL = None
+	
 
 	# Client Specific
 	CORNER_JAIL = None
@@ -90,8 +91,6 @@ def import_assets(app, screen_size=None):
 		Assets.GAME_STARTED = load_image("server/game_started")
 		Assets.QUIT_SELECTED = load_image("server/quit_selected")
 		Assets.QUIT_UNSELECTED = load_image("server/quit_unselected")
-		Assets.PIXEL = load_font("pixel")
-
 
 	elif app == "Client":
 		Assets.APP_ICON = load_icon("client/app_icon")
@@ -128,3 +127,4 @@ def import_assets(app, screen_size=None):
 	Assets.ICON8 = load_image("icon_8")
 	Assets.ICONS = ["Dummy!", Assets.ICON1, Assets.ICON2, Assets.ICON3, Assets.ICON4, Assets.ICON5, Assets.ICON6, Assets.ICON7, Assets.ICON8]
 	Assets.ARIAL = load_font("arial")
+	Assets.PIXEL = load_font("pixel")

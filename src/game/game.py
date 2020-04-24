@@ -41,30 +41,31 @@ class Game:
 						field_list.append(SpecialField(args[1]))
 		return field_list
 
+	# Functions for board drawing
 	def get_type(self, filed_pos):
 		return self.fields[filed_pos].get_type()
-
-	def get_info(self, field_pos):
-		field = self.fields[field_pos]
-		icons = []
-
-
-	def get_info(self, field_pos):
-		field = self.fields[field_pos]
-		icons = []
-		jailed = []
-		for player in self.players:
-			if player.is_jailed() and field_pos == 10 and player.pos == 10:
-				jailed.append(player.icon)
-			elif player.pos == field_pos:
-				icons.append(player.icon)
-		if field_pos == 10:
-			return [field.get_board_attributes(), icons, jailed]
-		else:
-			return [field.get_board_attributes(), icons]
-
 	def get_color(self, field_pos):
 		return self.fields[field_pos].color
+	def get_info(self, field_pos):
+		field = self.fields[field_pos]
+		info = field.get_info()
+		info["icons"] = []
+		info["jailed"] = []
+		for player in self.players:
+			if player.is_jailed():
+				info["jailed"].append(player.get_icon())
+			elif player.pos == field_pos:
+				info["icons"].append(player.get_icon())
+		return info
+	def get_tooltip(self, field_pos):
+		info = self.fields[field_pos].get_tooltip_info()
+		if info[1] != None:
+			owner_name = self.players[info[1]].name
+			number = info[3]
+		else:
+			owner_name = "Unowned"
+			number = info[2]
+		return [info[0], owner_name, str(number)]
 
 
 	def serialize(self):

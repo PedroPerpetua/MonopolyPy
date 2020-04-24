@@ -6,7 +6,7 @@ W|Community Chest
 P|Whitechapel Road|60|brown|50|4,20,60,180,230,450
 S|Income Tax
 R|Railroad 1
-P|The Angel, Islington|100|light-blue|50|6,30,90,270,400,550
+P|The Angel Islington|100|light-blue|50|6,30,90,270,400,550
 W|Luck
 P|Euston Road|100|light-blue|50|6,30,90,270,400,550
 P|Pentonville Road|120|light-blue|50|8,40,100,300,450,600

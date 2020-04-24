@@ -27,11 +27,25 @@ class Property:
 	def get_type(self):
 		return "Property"
 
-	def get_board_attributes(self):
-		return [self.houses, self.mortaged]
+	def get_info(self):
+		''' 
+		Returns the info that should be drawn on the board:
+			Number of houses;
+			Whether or not mortaged.
+		'''
+		info = {}
+		info["houses"] = self.houses
+		info["mortaged"]= self.mortaged
+		return info
 
-	def get_tooltip_attributes(self):
-		return [self.name, self.owner_id, self.taxes]
+	def get_tooltip_info(self):
+		'''
+		Returns the info that should show on the tooltip:
+			Name;
+			Price if not owned;
+			Owner and current tax if owned.
+		'''
+		return [self.name, self.owner_id, self.price, self.taxes[self.houses]]
 
 
 	def serialize(self):
@@ -57,8 +71,17 @@ class Railroad:
 	def get_type(self):
 		return "Railroad"
 
-	def get_board_attributes(self):
-		return [self.name, self.price]
+	def get_info(self):
+		return {}
+
+	def get_tooltip_info(self):
+		'''
+		Returns the info that should show on the tooltip:
+			Name;
+			Price if not owned;
+			Owner and current tax if owned.
+		'''
+		return [self.name, self.owner_id, self.price, self.taxes]
 
 	def serialize(self):
 		info = vars(self)
@@ -82,8 +105,11 @@ class Utility:
 	def get_type(self):
 		return self.name
 
-	def get_board_attributes(self):
-		return [self.name, self.price]
+	def get_info(self):
+		return {}
+
+	def get_tooltip_info(self):
+		return None
 
 	def serialize(self):
 		info = vars(self)
@@ -105,9 +131,11 @@ class WildcardField:
 	def get_type(self):
 		return self.card_type
 
-	def get_board_attributes(self):
-		return None
+	def get_info(self):
+		return {}
 
+	def get_tooltip_info(self):
+		return None
 
 	def serialize(self):
 		info = vars(self)
@@ -128,7 +156,10 @@ class SpecialField:
 	def get_type(self):
 		return self.field_type
 
-	def get_board_attributes(self):
+	def get_info(self):
+		return {}
+
+	def get_tooltip_info(self):
 		return None
 
 	def serialize(self):

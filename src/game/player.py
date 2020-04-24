@@ -14,7 +14,9 @@ class Player:
 
 	def is_jailed(self):
 		return self.jail_counter != 0
-
+	def get_icon(self):
+		return self.icon
+		
 	def serialize(self):
 		return vars(self)
 

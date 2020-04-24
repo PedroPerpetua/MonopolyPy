@@ -5,36 +5,41 @@ from lib.UI.board_items.icon_tile import IconTile
 from lib.UI.board_items.property_tile import PropertyTile
 from lib.UI.board_items.corner_tile import CornerTile
 from lib.assets import Assets
+import lib.UI.board_items.constants as c
 
+# Readability
+XVAR = 0
+YVAR = 1
 
-# NOTE: SIZES ARE SCALLED TO 1920:1080 SCREENS
-SIZE = 700
-SIDE = 98
-TOP = 56
-
+# Colors
 BORDER_COLOR = BLACK = (0,0,0)
 LIGHT_GRAY = (128, 128, 128)
 LIGHT_CYAN = (153, 255, 255)
 WHITE = (255,255,255)
-
-POSITIONS = [
-			(602,602), (546,602), (490, 602), (434, 602), (378, 602), (322, 602), (266, 602), (210, 602), (154, 602), (98, 602),
-			(0, 602), (0, 546), (0, 490), (0, 434), (0, 378), (0, 322), (0, 266), (0, 210), (0, 154), (0, 98), (0, 0),
-			(98, 0), (154, 0), (210, 0), (266, 0), (322, 0), (378, 0), (434, 0), (490, 0), (546, 0), (602, 0),
-			(602, 98), (602, 154), (602, 210), (602, 266), (602, 322), (602, 378), (602, 434), (602, 490), (602, 546)
-			]
-
+BG_GREEN = (143,188,114)
 
 class Board:
+	#Pairs of (x(i, j), y(i, j) corresponding to the offset of LARGE*i + SMALL*j, counting form the top right corner (x,y).
+	POS_VECTORS	= [
+				((1, 9), (1, 9)), ((1, 8), (1, 9)), ((1, 7), (1, 9)), ((1, 6), (1, 9)), ((1, 5), (1, 9)), ((1, 4), (1, 9)), ((1, 3), (1, 9)),
+				((1, 2), (1, 9)), ((1, 1), (1, 9)), ((1, 0), (1, 9)), ((0, 0), (1, 9)), ((0, 0), (1, 8)), ((0, 0), (1, 7)), ((0, 0), (1, 6)),
+				((0, 0), (1, 5)), ((0, 0), (1, 4)), ((0, 0), (1, 3)), ((0, 0), (1, 2)), ((0, 0), (1, 1)), ((0, 0), (1, 0)), ((0, 0), (0, 0)),
+				((1, 0), (0, 0)), ((1, 1), (0, 0)), ((1, 2), (0, 0)), ((1, 3), (0, 0)), ((1, 4), (0, 0)), ((1, 5), (0, 0)), ((1, 6), (0, 0)),
+				((1, 7), (0, 0)), ((1, 8), (0, 0)), ((1, 9), (0, 0)), ((1, 9), (1, 0)), ((1, 9), (1, 1)), ((1, 9), (1, 2)), ((1, 9), (1, 3)),
+				((1, 9), (1, 4)), ((1, 9), (1, 5)), ((1, 9), (1, 6)), ((1, 9), (1, 7)), ((1, 9), (1, 8))
+				]	
+
 	def __init__(self, x, y, game):
 		self.game = game
 		self.x = x
 		self.y = y
 
-		self.tiles = self.setup_tiles()
+		self.tiles = self.setup_tiles((x, y))
 		self.players_position = []
 
-	def setup_tiles(self):
+		self.tooltip_box = pg.Rect((x + 150, y + 490), (400, 100))
+
+	def setup_tiles(self, coords):
 		fields = []
 		for i in range(40):
 			field_type = self.game.get_type(i)
@@ -47,10 +52,11 @@ class Board:
 			else:
 				orientation = "R"
 			
-			x, y = POSITIONS[i]
-			x += self.x + 1
-			y += self.y + 1
+			vector = Board.POS_VECTORS[i]
+			x = vector[XVAR][0] * c.SIDE_LARGE + vector[XVAR][1] * c.SIDE_SMALL + c.BORDER_SIZE + coords[XVAR]
+			y = vector[YVAR][0] * c.SIDE_LARGE + vector[YVAR][1] * c.SIDE_SMALL + c.BORDER_SIZE + coords[YVAR]
 
+			# Why does python not have switch statements. This is so ugly.
 			if field_type == "Property":
 				fields.append(PropertyTile(x, y, orientation, self.game.get_color(i)))
 			elif field_type == "Railroad":
@@ -79,33 +85,29 @@ class Board:
 				fields.append(None)
 		return fields
 
-	def draw_border(self, window):
-		pg.draw.rect(window, BORDER_COLOR, ((self.x, self.y), (SIZE, SIDE)))
-		pg.draw.rect(window, BORDER_COLOR, ((self.x, self.y), (SIDE, SIZE)))
-		pg.draw.rect(window, BORDER_COLOR, ((self.x, self.y + SIZE - SIDE), (SIZE, SIDE)))
-		pg.draw.rect(window, BORDER_COLOR, ((self.x + SIZE - SIDE, self.y), (SIDE, SIZE)))
+	def update(self, events):
+		tile_hovered = None
+		for i in range(40):
+			tile = self.tiles[i]
+			tile.update(self.game.get_info(i))
+			if tile.get_hovered():
+				tile_hovered = i
+		# if tile_hovered:
+		# 	self.tooltip.update(self.game.get_tooltip(tile_hovered))
 
-	def draw_tile(self, window, pos):
-		if pos == 10: # Jail
-			info, players, jailed = self.game.get_info(pos)
-			self.tiles[pos].draw(window, players, jailed)
-		else:
-			info, players = self.game.get_info(pos)
-			self.tiles[pos].update_info(info)
-			self.tiles[pos].draw(window, players)
-
-	def draw_tooltip(self, window, pos):
-		self.tiles[pos].draw_tooltip(window)
 
 	def draw(self, window):
-		self.draw_border(window)
-		for i in range(40):
-			self.draw_tile(window, i)
-		# We can only check for tooltips after we've drawn all of them, so it's always on top
-		for i in range(40):
-			self.draw_tooltip(window, i)
+		# First we draw the border
+		pg.draw.rect(window, BORDER_COLOR, ((self.x, self.y), (c.SIZE, c.SIZE)))
+		side_interior = c.SIZE - 2 * c.SIDE_LARGE
+		pg.draw.rect(window, BG_GREEN, ((self.x + c.SIDE_LARGE, self.y + c.SIDE_LARGE), (side_interior, side_interior)))
+		pg.draw.rect(window, BORDER_COLOR, ((self.tooltip_box.left - 1, self.tooltip_box.top - 1), (self.tooltip_box.width + 2, self.tooltip_box.height + 2)))
 
-	def update(self, events):
+		# Then we draw the tiles
 		for i in range(40):
-			self.tiles[i].update(events)
+			self.tiles[i].draw(window)
 
+		# And finally we draw the tooltip
+		#self.tooltip.draw(window)
+
+	
