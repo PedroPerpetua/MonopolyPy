@@ -1,2 +1,3 @@
-# Monopoly
-Python monopoly with online support using pygame, threads and sockets.
+# MonopolyPy
+An online Monopoly game made with Python.
+Utilizes Pygame, Sockets, and Threads.
