@@ -4,6 +4,7 @@ from src.game.game import Game
 from lib.UI.board_items.icon_tile import IconTile
 from lib.UI.board_items.property_tile import PropertyTile
 from lib.UI.board_items.corner_tile import CornerTile
+from lib.UI.board_items.tooltip import Tooltip
 from lib.assets import Assets
 import lib.UI.board_items.constants as c
 
@@ -37,7 +38,7 @@ class Board:
 		self.tiles = self.setup_tiles((x, y))
 		self.players_position = []
 
-		self.tooltip_box = pg.Rect((x + 150, y + 490), (400, 100))
+		self.tooltip = Tooltip(x, y)
 
 	def setup_tiles(self, coords):
 		fields = []
@@ -85,6 +86,7 @@ class Board:
 				fields.append(None)
 		return fields
 
+	# Drawing functions
 	def update(self, events):
 		tile_hovered = None
 		for i in range(40):
@@ -92,8 +94,10 @@ class Board:
 			tile.update(self.game.get_info(i))
 			if tile.get_hovered():
 				tile_hovered = i
-		# if tile_hovered:
-		# 	self.tooltip.update(self.game.get_tooltip(tile_hovered))
+		if tile_hovered != None:
+			self.tooltip.update(self.game.get_tooltip(tile_hovered))
+		else:
+			self.tooltip.update(None)
 
 
 	def draw(self, window):
@@ -101,13 +105,14 @@ class Board:
 		pg.draw.rect(window, BORDER_COLOR, ((self.x, self.y), (c.SIZE, c.SIZE)))
 		side_interior = c.SIZE - 2 * c.SIDE_LARGE
 		pg.draw.rect(window, BG_GREEN, ((self.x + c.SIDE_LARGE, self.y + c.SIDE_LARGE), (side_interior, side_interior)))
-		pg.draw.rect(window, BORDER_COLOR, ((self.tooltip_box.left - 1, self.tooltip_box.top - 1), (self.tooltip_box.width + 2, self.tooltip_box.height + 2)))
+		x, y, w, h = self.tooltip.get_dimensions()
+		pg.draw.rect(window, BORDER_COLOR, ((x - c.BORDER_SIZE, y - c.BORDER_SIZE), (w + 2 * c.BORDER_SIZE,h + 2 * c.BORDER_SIZE)))
 
 		# Then we draw the tiles
 		for i in range(40):
 			self.tiles[i].draw(window)
 
 		# And finally we draw the tooltip
-		#self.tooltip.draw(window)
+		self.tooltip.draw(window)
 
 	

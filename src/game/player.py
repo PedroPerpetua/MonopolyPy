@@ -16,6 +16,12 @@ class Player:
 		return self.jail_counter != 0
 	def get_icon(self):
 		return self.icon
+	def get_name(self):
+		return self.name
+	def get_rail(self):
+		return 0
+	def get_util(self):
+		return 0
 		
 	def serialize(self):
 		return vars(self)

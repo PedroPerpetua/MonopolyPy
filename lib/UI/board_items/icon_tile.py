@@ -20,6 +20,7 @@ class IconTile:
 		self.info = None
 		# Info should contain: icons (players standing here)
 
+
 	def get_hovered(self):
 		return self.hovered
 

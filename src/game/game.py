@@ -30,11 +30,13 @@ class Game:
 						taxes = []
 						for number in args[5].split(","):
 							taxes.append(int(number))
-						field_list.append(Property(args[1],args[2],args[3],args[4],taxes))
+						field_list.append(Property(args[1],int(args[2]),args[3],int(args[4]),taxes))
 					elif args[0] == "R":
 						field_list.append(Railroad(args[1]))
 					elif args[0] == "U":
 						field_list.append(Utility(args[1]))
+					elif args[0] == "T":
+						field_list.append(Tax(args[1], int(args[2])))
 					elif args[0] == "W":
 						field_list.append(WildcardField(args[1]))
 					elif args[0] == "S":
@@ -58,14 +60,14 @@ class Game:
 				info["icons"].append(player.get_icon())
 		return info
 	def get_tooltip(self, field_pos):
-		info = self.fields[field_pos].get_tooltip_info()
-		if info[1] != None:
-			owner_name = self.players[info[1]].name
-			number = info[3]
+		info = self.fields[field_pos].get_tooltip()
+		if "owner_id" in info and info["owner_id"] != None:
+			info["owner"] = self.players[info["owner_id"]].get_name()
+			info["util"] = self.players[info["owner_id"]].get_util()
+			info["rail"] = self.players[info["owner_id"]].get_rail()
 		else:
-			owner_name = "Unowned"
-			number = info[2]
-		return [info[0], owner_name, str(number)]
+			info["owner"] = "Unowned"
+		return info
 
 
 	def serialize(self):

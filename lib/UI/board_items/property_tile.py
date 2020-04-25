@@ -16,6 +16,7 @@ class PropertyTile:
 		self.info = {}
 		# Info should contain: color, icons (players standing here), houses, mortaged
 
+
 	def map_positions(self, position, orientation):
 		pos = {}
 		pos["houses"] = c.HOUSE_OFFSETS[orientation]
@@ -28,12 +29,11 @@ class PropertyTile:
 			box = pg.Rect(position, (PropertyTile.SIDE_SMALL, PropertyTile.SIDE_LARGE))
 		return (box, pos)
 
-	
-
 	def get_hovered(self):
 		return self.hovered
 
 
+	# Drawing functions
 	def update(self, info):
 		self.hovered = False
 		if self.box.collidepoint(pg.mouse.get_pos()):
@@ -41,7 +41,6 @@ class PropertyTile:
 
 		self.info = info
 
-	# Drawing functions
 	def draw(self, window):
 		pg.draw.rect(window, self.color, self.box)
 		num_houses = self.info["houses"]

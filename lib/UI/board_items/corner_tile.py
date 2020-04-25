@@ -27,6 +27,10 @@ class CornerTile:
 		# Info should contain: icons (players standing here), jailed (players jailed)
 
 
+	def get_hovered(self):
+		return self.hovered
+
+
 	# Drawing Functions
 	def update(self, game_info):
 		self.hovered = False
@@ -34,7 +38,6 @@ class CornerTile:
 			self.hovered = True
 
 		self.info = game_info
-
 
 	def draw(self, window):
 		pg.draw.rect(window, WHITE, self.box)
@@ -58,7 +61,3 @@ class CornerTile:
 			for i in range(len(self.info["icons"])):
 				offset_x, offset_y = positions[i]
 				window.blit(Assets.ICONS[self.info["icons"][i]], (self.box.centerx + offset_x, self.box.centery + offset_y))
-
-			
-	def get_hovered(self):
-		return self.hovered
