@@ -16,7 +16,7 @@ def server_thread(server):
 def setup_window():
 	win = pygame.display.set_mode((WIN_W, WIN_H))
 	import_assets("Server")
-	pygame.display.set_caption("Monopoly server")
+	pygame.display.set_caption("MonopolyPy server")
 	icon = Assets.APP_ICON
 	pygame.display.set_icon(icon)
 	return win

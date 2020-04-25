@@ -32,6 +32,15 @@ class Assets:
 	GAME_STARTED = None
 	QUIT_SELECTED = None
 	QUIT_UNSELECTED = None
+	HELP_SELECTED = None
+	HELP_UNSELECTED = None
+	RETURN_SELECTED = None
+	RETURN_UNSELECTED = None
+	ABOUT = None
+	INTERNET_SELECTED = None
+	INTERNET_UNSELECTED = None
+	GIT_SELECTED = None
+	GIT_UNSELECTED = None
 	
 
 	# Client Specific
@@ -91,6 +100,15 @@ def import_assets(app, screen_size=None):
 		Assets.GAME_STARTED = load_image("server/game_started")
 		Assets.QUIT_SELECTED = load_image("server/quit_selected")
 		Assets.QUIT_UNSELECTED = load_image("server/quit_unselected")
+		Assets.HELP_SELECTED = load_image("server/help_selected")
+		Assets.HELP_UNSELECTED = load_image("server/help_unselected")
+		Assets.RETURN_SELECTED = load_image("server/return_selected")
+		Assets.RETURN_UNSELECTED = load_image("server/return_unselected")
+		Assets.ABOUT = load_image("server/about")
+		Assets.INTERNET_SELECTED = load_image("server/internet_selected")
+		Assets.INTERNET_UNSELECTED = load_image("server/internet_unselected")
+		Assets.GIT_SELECTED = load_image("server/git_selected")
+		Assets.GIT_UNSELECTED = load_image("server/git_unselected")
 
 	elif app == "Client":
 		Assets.APP_ICON = load_icon("client/app_icon")
