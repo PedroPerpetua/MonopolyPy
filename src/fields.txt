@@ -1,6 +1,6 @@
 # Fields to be imported.
 # Format: Type|Name|Cost|Color|House Price|Tax Values
-S|Start
+C0|Start
 P|Old Kent Rd.|60|brown|50|2,10,30,90,160,250
 W|Community Chest
 P|Whitechapel Rd.|60|brown|50|4,20,60,180,230,450
@@ -10,7 +10,7 @@ P|The Angel Islington|100|light-blue|50|6,30,90,270,400,550
 W|Luck
 P|Euston Rd.|100|light-blue|50|6,30,90,270,400,550
 P|Pentonville Rd.|120|light-blue|50|8,40,100,300,450,600
-S|Jail
+C1|Jail
 P|Pall Mall|140|magenta|100|10,50,150,450,625,750
 U|Electric Company
 P|Whitehall|140|magenta|100|10,50,150,450,625,750
@@ -20,7 +20,7 @@ P|Bow St.|180|orange|100|14,70,200,550,750,950
 W|Community Chest
 P|Marlborough St.|180|orange|100|14,70,200,550,750,950
 P|Vine St.|200|orange|100|16,80,220,600,800,1000
-S|Free Parking
+C2|Free Parking
 P|Strand|220|red|150|18,90,250,700,875,1050
 W|Luck
 P|Fleet St.|220|red|150|18,90,250,700,875,1050
@@ -30,7 +30,7 @@ P|Leicester Square|260|yellow|150|22,110,330,800,975,1150
 P|Coventry St.|260|yellow|150|22,110,330,800,975,1150
 U|Water Company
 P|Piccadilly|280|yellow|150|24,120,360,850,1025,1200
-S|Go to jail!
+C3|Go to jail!
 P|Regent St.|300|green|200|26,130,390,900,1100,1275
 P|Oxford St.|300|green|200|26,130,390,900,1100,1275
 W|Community Chest

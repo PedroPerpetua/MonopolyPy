@@ -11,7 +11,7 @@ DATA = 1
 ICON = 0
 NAME = 1
 
-class Client:
+class ServerClient:
 	def __init__(self, conn, addr, server):
 		self.active = False
 		self.conn = conn

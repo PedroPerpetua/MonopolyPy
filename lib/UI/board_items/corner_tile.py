@@ -17,18 +17,17 @@ class CornerTile:
 	VISITING_CENTER = (16, 80)
 	SIDE = c.SIDE_LARGE - c.BORDER_SIZE * 2
 
-	def __init__(self, x, y, image, jail=False):
+	def __init__(self, x, y):
 		self.box = pg.Rect((x,y), (CornerTile.SIDE, CornerTile.SIDE))
-		self.image = image
-		self.jail = jail
 		self.hovered = False
-
 		self.info = None
-		# Info should contain: icons (players standing here), jailed (players jailed)
 
 
 	def get_hovered(self):
 		return self.hovered
+	def get_border(self):
+		return ((self.box.left - c.BORDER_SIZE * 2, self.box.top - c.BORDER_SIZE * 2),
+			(self.box.width + c.BORDER_SIZE * 4, self.box.height + c.BORDER_SIZE * 4))
 
 
 	# Drawing Functions
@@ -36,14 +35,14 @@ class CornerTile:
 		self.hovered = False
 		if self.box.collidepoint(pg.mouse.get_pos()):
 			self.hovered = True
-
 		self.info = game_info
+		pass
 
 	def draw(self, window):
-		pg.draw.rect(window, WHITE, self.box)
-		window.blit(self.image, self.box)
+		pg.draw.rect(window, self.info["color"], self.box)
+		window.blit(self.info["image"], self.box)
 
-		if self.jail:
+		if self.info["jail"]:
 			# Drawing the jailed players
 			positions = c.PLAYER_POSITIONS_OFFSET[len(self.info["jailed"])]
 			x, y = CornerTile.JAIL_CENTER
@@ -51,13 +50,14 @@ class CornerTile:
 				offset_x, offset_y = positions[i]
 				window.blit(Assets.ICONS[self.info["jailed"][i]], (self.box.left + x + offset_x, self.box.top + y + offset_y))
 
-			positions = CornerTile.VISITING_POSITIONS_OFFSET[len(self.info["icons"])]
+			positions = CornerTile.VISITING_POSITIONS_OFFSET[len(self.info["players"])]
 			x, y = CornerTile.VISITING_CENTER
-			for i in range(len(self.info["icons"])):
+			for i in range(len(self.info["players"])):
 				offset_x, offset_y = positions[i]
-				window.blit(Assets.ICONS[self.info["icons"][i]], (self.box.left + x + offset_x, self.box.top + y + offset_y))
+				window.blit(Assets.ICONS[self.info["players"][i]], (self.box.left + x + offset_x, self.box.top + y + offset_y))
 		else:
-			positions = c.PLAYER_POSITIONS_OFFSET[len(self.info["icons"])]
-			for i in range(len(self.info["icons"])):
+			positions = c.PLAYER_POSITIONS_OFFSET[len(self.info["players"])]
+			for i in range(len(self.info["players"])):
 				offset_x, offset_y = positions[i]
-				window.blit(Assets.ICONS[self.info["icons"][i]], (self.box.centerx + offset_x, self.box.centery + offset_y))
+				window.blit(Assets.ICONS[self.info["players"][i]], (self.box.centerx + offset_x, self.box.centery + offset_y))
+		pass

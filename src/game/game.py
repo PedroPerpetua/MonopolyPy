@@ -39,35 +39,32 @@ class Game:
 						field_list.append(Tax(args[1], int(args[2])))
 					elif args[0] == "W":
 						field_list.append(WildcardField(args[1]))
-					elif args[0] == "S":
-						field_list.append(SpecialField(args[1]))
+					elif args[0] == "C0":
+						field_list.append(StartField())
+					elif args[0] == "C1":
+						field_list.append(JailField())
+					elif args[0] == "C2":
+						field_list.append(FreeParkingField())
+					elif args[0] == "C3":
+						field_list.append(GoToJailField())
 		return field_list
 
 	# Functions for board drawing
 	def get_type(self, filed_pos):
 		return self.fields[filed_pos].get_type()
-	def get_color(self, field_pos):
-		return self.fields[field_pos].color
-	def get_info(self, field_pos):
+	def get_field(self, field_pos):
 		field = self.fields[field_pos]
-		info = field.get_info()
-		info["icons"] = []
+		info = field.get_field()
+		info["players"] = []
 		info["jailed"] = []
 		for player in self.players:
 			if player.is_jailed():
 				info["jailed"].append(player.get_icon())
 			elif player.pos == field_pos:
-				info["icons"].append(player.get_icon())
+				info["players"].append(player.get_icon())
 		return info
 	def get_tooltip(self, field_pos):
-		info = self.fields[field_pos].get_tooltip()
-		if "owner_id" in info and info["owner_id"] != None:
-			info["owner"] = self.players[info["owner_id"]].get_name()
-			info["util"] = self.players[info["owner_id"]].get_util()
-			info["rail"] = self.players[info["owner_id"]].get_rail()
-		else:
-			info["owner"] = "Unowned"
-		return info
+		return self.fields[field_pos].get_tooltip()
 
 
 	def serialize(self):
@@ -82,6 +79,7 @@ class Game:
 			info["fields"][i] = self.fields[i].serialize()
 		return info
 
+	@staticmethod
 	def deserialize(info):
 		result = Game()
 		for key in info:
@@ -91,7 +89,7 @@ class Game:
 			result.players.append(Player.deserialize(info["players"][player]))
 		result.fields = []
 		for field in info["fields"]:
-			result.fields.append(Field.field_deserialize(info["fields"][field]))
+			result.fields.append(field_deserialize(info["fields"][field]))
 		return result
 
 
@@ -102,13 +100,6 @@ class Game:
 	def send_request(self, player_id, request):
 		response = self.server.receive_request(player_id, request)
 		return response
-
-
-
-
-
-	def pass_turn(self):
-		self.current_player = (self.current_player + 1) % self.MAX_PLAYERS
 
 
 	def __str__(self):

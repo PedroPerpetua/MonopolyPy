@@ -67,4 +67,4 @@ def get_rgb(string):
 		return (0, 128, 0)
 	elif string == "blue":
 		return (48, 79, 254)
-	return (0,0,0)
+	return (255, 255, 255)

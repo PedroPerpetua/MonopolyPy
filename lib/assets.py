@@ -44,10 +44,10 @@ class Assets:
 	
 
 	# Client Specific
+	CORNER_START = None
 	CORNER_JAIL = None
 	CORNER_FREEPARKING = None
 	CORNER_GOTOJAIL = None
-	CORNER_START = None
 
 	HOTEL_LANDSCAPE = None
 	HOTEL_PORTRAIT = None

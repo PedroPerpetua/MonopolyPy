@@ -18,6 +18,7 @@ LIGHT_GRAY = (128, 128, 128)
 LIGHT_CYAN = (153, 255, 255)
 WHITE = (255,255,255)
 BG_GREEN = (143,188,114)
+SELECTED_COLOR = (255, 128, 0)
 
 class Board:
 	#Pairs of (x(i, j), y(i, j) corresponding to the offset of LARGE*i + SMALL*j, counting form the top right corner (x,y).
@@ -30,20 +31,20 @@ class Board:
 				((1, 9), (1, 4)), ((1, 9), (1, 5)), ((1, 9), (1, 6)), ((1, 9), (1, 7)), ((1, 9), (1, 8))
 				]	
 
-	def __init__(self, x, y, game):
+	def __init__(self, x, y, control_area, game):
 		self.game = game
 		self.x = x
 		self.y = y
-
 		self.tiles = self.setup_tiles((x, y))
-		self.players_position = []
 
+		self.control_box = pg.rect.Rect(control_area)
+		self.selected_index = None
 		self.tooltip = Tooltip(x, y)
 
 	def setup_tiles(self, coords):
 		fields = []
 		for i in range(40):
-			field_type = self.game.get_type(i)
+			field_type = self.game.fields[i].get_type()
 			if 0 < i < 10:
 				orientation = "B"
 			elif 10 < i < 20:
@@ -58,46 +59,36 @@ class Board:
 			y = vector[YVAR][0] * c.SIDE_LARGE + vector[YVAR][1] * c.SIDE_SMALL + c.BORDER_SIZE + coords[YVAR]
 
 			# Why does python not have switch statements. This is so ugly.
-			if field_type == "Property":
-				fields.append(PropertyTile(x, y, orientation, self.game.get_color(i)))
-			elif field_type == "Railroad":
-				fields.append(IconTile(x, y, orientation, Assets.TRAIN, LIGHT_GRAY))
-			elif field_type == "Water Company":
-				fields.append(IconTile(x, y, orientation, Assets.COMPANY_WATER, LIGHT_CYAN))
-			elif field_type == "Electric Company":
-				fields.append(IconTile(x, y, orientation, Assets.COMPANY_ELECTRICITY, LIGHT_CYAN))
-			elif field_type == "Luck":
-				fields.append(IconTile(x, y, orientation, Assets.LUCK, WHITE))
-			elif field_type == "Community Chest":
-				fields.append(IconTile(x, y, orientation, Assets.COMMUNITY_CHEST, WHITE))
-			elif field_type == "Income Tax":
-				fields.append(IconTile(x, y, orientation, Assets.TAX_INCOME, WHITE))
-			elif field_type == "Luxury Tax":
-				fields.append(IconTile(x, y, orientation, Assets.TAX_LUXURY, WHITE))
-			elif field_type == "Start":
-				fields.append(CornerTile(x, y, Assets.CORNER_START))
-			elif field_type == "Jail":
-				fields.append(CornerTile(x, y, Assets.CORNER_JAIL, True))
-			elif field_type == "Free Parking":
-				fields.append(CornerTile(x, y, Assets.CORNER_FREEPARKING))
-			elif field_type == "Go to jail!":
-				fields.append(CornerTile(x, y, Assets.CORNER_GOTOJAIL))
+			if field_type == "property":
+				fields.append(PropertyTile(x, y, orientation))
+			elif field_type == "icon":
+				fields.append(IconTile(x, y, orientation))
+			elif field_type == "corner":
+				fields.append(CornerTile(x, y))
 			else:
-				fields.append(None)
+				raise ValueError
 		return fields
+
+	def get_selected(self):
+		return self.selected_index
 
 	# Drawing functions
 	def update(self, events):
 		tile_hovered = None
 		for i in range(40):
 			tile = self.tiles[i]
-			tile.update(self.game.get_info(i))
+			tile.update(self.game.get_field(i))
 			if tile.get_hovered():
 				tile_hovered = i
 		if tile_hovered != None:
 			self.tooltip.update(self.game.get_tooltip(tile_hovered))
 		else:
 			self.tooltip.update(None)
+
+		for event in events:
+			if event.type == pg.MOUSEBUTTONDOWN and self.control_box.collidepoint(event.pos):
+				self.selected_index = tile_hovered
+
 
 
 	def draw(self, window):
@@ -108,11 +99,14 @@ class Board:
 		x, y, w, h = self.tooltip.get_dimensions()
 		pg.draw.rect(window, BORDER_COLOR, ((x - c.BORDER_SIZE, y - c.BORDER_SIZE), (w + 2 * c.BORDER_SIZE,h + 2 * c.BORDER_SIZE)))
 
+		# We also draw the border on the selected tile
+		if self.selected_index != None:
+			border_rect = self.tiles[self.selected_index].get_border()
+			pg.draw.rect(window, SELECTED_COLOR, border_rect)
+
 		# Then we draw the tiles
 		for i in range(40):
 			self.tiles[i].draw(window)
 
 		# And finally we draw the tooltip
 		self.tooltip.draw(window)
-
-	

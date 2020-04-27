@@ -1,11 +1,12 @@
 import socket, select
 import threading
 import json
-from time import time
+import time
 
 from lib import colors as cs
 from src.logger import write_log
-from src.client import Client
+from src.game.game import Game
+from src.server_client import ServerClient
 
 # Tag constants for readability:
 CLIENT = 0
@@ -98,7 +99,7 @@ class Server:
 			time.sleep(0.2)
 			try:
 				game_data = json.dumps(self.game.serialize())
-				client.conn.sendall(game_data.encode())
+				tag[CLIENT].conn.sendall(game_data.encode())
 			except socket.error as se:
 				self.disconnect(tag, se)
 
@@ -121,7 +122,7 @@ class Server:
 		while self.active and not self.check_state(DATA):
 			try:
 				conn, addr = server_socket.accept()
-				new_tag = self.add_tag(Client(conn,addr,self))
+				new_tag = self.add_tag(ServerClient(conn,addr,self))
 				print(cs.yellow("[CONNECTION]") + f" New connection @ {new_tag[CLIENT]}.")
 				if self.check_state(CLIENT, new_tag):
 					self.disconnect(new_tag, "SERVER FULL")
@@ -141,7 +142,7 @@ class Server:
 			server_socket.close()
 
 	def start_game(self):
-		self.game = True
+		self.game = Game()
 
 	# Main thread handling communication and requests
 	def processing_thread(self):

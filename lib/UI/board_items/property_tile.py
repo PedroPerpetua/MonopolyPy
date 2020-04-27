@@ -7,13 +7,11 @@ class PropertyTile:
 	SIDE_LARGE = c.SIDE_LARGE - c.BORDER_SIZE * 2
 	SIDE_SMALL = c.SIDE_SMALL - c.BORDER_SIZE * 2
 
-	def __init__(self, x, y, orientation, color):
-		self.color = c.get_rgb(color)
+	def __init__(self, x, y, orientation):
 		# Calculate the positions based on landscape or portrait
 		self.box, self.offsets = self.map_positions((x, y), orientation)
 		self.hovered = False
-
-		self.info = {}
+		self.info = None
 		# Info should contain: color, icons (players standing here), houses, mortaged
 
 
@@ -31,6 +29,9 @@ class PropertyTile:
 
 	def get_hovered(self):
 		return self.hovered
+	def get_border(self):
+		return ((self.box.left - c.BORDER_SIZE * 2, self.box.top - c.BORDER_SIZE * 2),
+			(self.box.width + c.BORDER_SIZE * 4, self.box.height + c.BORDER_SIZE * 4))
 
 
 	# Drawing functions
@@ -42,7 +43,7 @@ class PropertyTile:
 		self.info = info
 
 	def draw(self, window):
-		pg.draw.rect(window, self.color, self.box)
+		pg.draw.rect(window, c.get_rgb(self.info["color"]), self.box)
 		num_houses = self.info["houses"]
 		if num_houses == 5:
 			offset_x = self.offsets["houses"]["x"][5]
@@ -61,8 +62,8 @@ class PropertyTile:
 			offset_x, offset_y = c.IMAGE_OFFSET
 			window.blit(Assets.MORTAGED, (self.box.left + x + offset_x, self.box.top + y + offset_y))
 
-		positions = c.PLAYER_POSITIONS_OFFSET[len(self.info["icons"])]
+		positions = c.PLAYER_POSITIONS_OFFSET[len(self.info["players"])]
 		x, y = self.offsets["center"]
-		for i in range(len(self.info["icons"])):
+		for i in range(len(self.info["players"])):
 			offset_x, offset_y = positions[i]
-			window.blit(Assets.ICONS[self.info["icons"][i]], (self.box.left + x + offset_x, self.box.top + y + offset_y))
+			window.blit(Assets.ICONS[self.info["players"][i]], (self.box.left + x + offset_x, self.box.top + y + offset_y))
