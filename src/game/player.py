@@ -1,7 +1,10 @@
+import random
+
 STARTING_MONEY = 1500
 
+
 class Player:
-	def __init__(self, icon=None, name=""):
+	def __init__(self, name="", icon=None):
 		self.name = name
 		self.icon = icon
 		self.pos = 0
@@ -10,9 +13,12 @@ class Player:
 						"brown": [], "light-blue": [], "magenta": [], "orange": [],
 						"red": [], "yellow": [], "green": [], "blue": []
 						}
+		self.game = None
 		self.money = STARTING_MONEY
 		self.jail_counter = 0
 		self.jail_card = 0
+
+		self.can_roll = False
 
 	def is_jailed(self):
 		return self.jail_counter != 0
@@ -51,6 +57,31 @@ class Player:
 			return False
 		if field.houses == 5:
 			return False
+
+	def move(self, number):
+		new_pos = self.pos + number
+		if new_pos >= 40:
+			new_pos += -40
+			self.money += 200
+		self.pos = new_pos
+
+	def dice_roll(self):
+		roll1 = random.randint(1, 6)
+		roll2 = random.randint(1, 6)
+		return (roll1, roll2)
+	
+	def turn_roll(self):
+		roll = self.dice_roll()
+		if self.jail_counter == 0:
+			self.move(roll[0] + roll[1])
+			self.game.fields[self.pos].do_action(self, roll)
+			if roll[0] != roll[2]:
+				self.can_roll = False
+		else:
+			if roll[0] == roll[1]:
+				self.jail_counter = 0
+				self.move(roll[0] + roll[1])
+			self.can_roll = False
 
 	def serialize(self):
 		return vars(self)

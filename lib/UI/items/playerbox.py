@@ -37,8 +37,8 @@ class PlayerBox:
 					text = self.font.render("Not ready" + self.update_dots(), True, TEXT_COLOR)
 					window.blit(text, (self.box.left + 6, self.box.top + 6))
 				else:
-					window.blit(Assets.ICONS[self.player_id[0]], (self.box.left, self.box.top))
-					text = self.font.render(self.player_id[1], True, TEXT_COLOR)
+					window.blit(Assets.ICONS["MEDIUM"][self.player_id[1]], (self.box.left, self.box.top))
+					text = self.font.render(self.player_id[0], True, TEXT_COLOR)
 					window.blit(text, (self.box.left + 32 + 6, self.box.top + 6))
 
 	def update(self, _):

@@ -1,143 +1,85 @@
-import socket, select
-import threading
-from lib import colors as cs
-import json
-from src.game.game import Game
+import pygame as pg
+from lib.assets import Assets, import_assets
+from src.client_screens import StartScreen, ProfileScreen, GameScreen
+from src.client import Client
 
-SERVER = None
-MESSAGE_SIZE = 8192
-class Network:
-	def __init__(self, server, port):
-		self.client = None
-		self.addr = (server, port)
-		self.active = False
-		self.game = None
+WIN_W = 1280
+WIN_H = 720
 
-
-	def start(self):
-		if not self.active:
-			self.active = True
-			thread = threading.Thread(target=self.processing_thread)
-			thread.start()
-
-	def connect(self, password):
-		global SERVER
-		if SERVER == None:
-			try:
-				self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-				self.client.connect(self.addr)
-				print(cs.red("[CONNECT]") + f" Connected to {self.addr}.")
-				SERVER = self.addr
-				self.start()
-				try:
-					self.client.sendall(json.dumps(password).encode())
-				except socket.error as e:
-					self.disconnect("connect -> " + str(e))
-			except OSError as ose:
-				print(cs.red("[ERROR]") + " Server is closed! " + str(ose))
-		else:
-			print(cs.red("[ERROR]") + " connect -> Already connected!")
-
-	def disconnect(self, message):
-		global SERVER
-		if SERVER != None:
-			SERVER = None
-			print(cs.red("[DISCONNECT]") + f" Disconnected: {message}.")
-			self.active = False
-			self.client.close()
-		else:
-			print(cs.red("[ERROR]") + " disconnect -> Not connected!")
-
-	def send_data(self, data):
-		global SERVER
-		if SERVER != None:
-			try:
-				data = json.dumps(data)
-				self.client.sendall(data.encode())
-				print(cs.red("[DATA]") + f" Sent <{data}>.")
-			except socket.error as e:
-				self.disconnect("send_data -> " + str(e))
-		else:
-			print(cs.red("[ERROR]") + " send_data -> Not connected!")
-
-	def receive_data(self):
-		global SERVER
-		if SERVER != None:
-			try:
-				data = self.client.recv(MESSAGE_SIZE).decode()
-				if data != "":
-					data = json.loads(data)
-					print(cs.red("[DATA]") + f" Received <{data}>.")
-					return data
-				else:
-					return -1
-			except socket.error as e:
-				self.disconnect("receive_data -> " + str(e))
-		else:
-			print(cs.red("[ERROR]") + " receive_data -> Not connected!")
-
-	def receive_game(self):
-		global SERVER
-		if SERVER != None:
-			try:
-				game = self.client.recv(MESSAGE_SIZE).decode()
-				if game != "":
-					game = json.loads(game)
-					print(cs.red("[DATA]") + " RECEIVED A GAME UPDATE")
-					self.game = Game.deserialize(game)
-			except socket.error as e:
-				self.disconnect("receive_game -> " + str(e))
-		else:
-			print(cs.red("[ERROR]") + " receive_game -> Not connected!")
-
-
-	def processing_thread(self):
-		global SERVER
-		while self.active:
-			status = select.select([self.client], [], [], 1)
-			if self.client in status[0]:
-				try:
-					if SERVER != None:
-						received = self.receive_data()
-						if received == -1:
-							self.disconnect("Server closed")
-						if received == "game_update":
-							self.receive_game()
-							print(self.game)
-				except socket.error as se:
-					self.disconnect("processing_thread -> " + str(se))
-
+# MAIN APPLICATION LOOP
 def main():
-	global SERVER
-	server = input("Please input the server -> ")
-	port = int(input("Please input the port -> "))
-	password = input("Please input the password -> ")
-	network = Network(server, port)
+	# INITIALIZE PYGAME WINDOW
+	pg.init()
+	 # TODO: FULLSCREEN
+	win = pg.display.set_mode((WIN_W, WIN_H))
+	import_assets("Client")
+	pg.display.set_caption("MonopolyPy")
+	icon = Assets.APP_ICON
+	pg.display.set_icon(icon)
 
-	print("Please input a command:")
-	while True:
-		command = input()
-		if command[0] == 'c':
-			network.connect(password)
-			if SERVER != None:
-				name = input("Please insert your name -> ")
-				network.send_data(name)
-				icon = input("Please insert your icon (id) -> ")
-				network.send_data(int(icon))
-		elif command[0] == 's':
-			network.send_data(command[2:])
-		elif command[0] == 'd':
-			network.disconnect("main -> Requested disconnect")
-		elif command[0] == 'x':
-			if SERVER != None:
-				network.disconnect("main -> Closing")
-			break
-		else:
-			print("COMMANDS:")
-			print("c      - connect to the server with a name.")
-			print("s DATA - send said data to the connected server, if any.")
-			print("d      - disconnect from the connected server, if any.")
-			print("x      - close the client.")
+    # START SCREEN
+	screen = StartScreen()
+	connected = False
+	while not connected:
+		pg.time.delay(100)
+		events = pg.event.get()
+		for event in events:
+			if event.type == pg.QUIT:
+				pg.quit()
+				exit(0)
+		screen.update(events)
+
+		# EVENTS INSIDE THIS SCREEN
+		if screen.submited():
+			server, port, password = screen.get_values()
+			client = Client(server, port, password)
+			try:
+				client.connect()
+				connected = True
+			except ConnectionAbortedError:
+				print("Wrong password")
+			except ConnectionRefusedError:
+				print("Server offline")
+		
+		screen.draw(win)
+		pg.display.update()
+
+	client.start()
+
+	screen = ProfileScreen(client)
+	game_started = False
+	while not game_started:
+		pg.time.delay(100)
+		events = pg.event.get()
+		for event in events:
+			if event.type == pg.QUIT:
+				pg.quit()
+				screen.client.disconnect()
+				exit(0)
+		screen.update(events)
+
+		if screen.client.game:
+			game_started = True
+		# EVENTS INSIDE THIS SCREEN
+		screen.draw(win)
+		pg.display.update()
+	
+	screen = GameScreen(client)
+	game_running = True
+	while game_running:
+		pg.time.delay(100)
+		events = pg.event.get()
+		for event in events:
+			if event.type == pg.QUIT:
+				pg.quit()
+				screen.client.disconnect()
+				exit(0)
+		screen.update(events)
+
+		# EVENTS INSIDE THIS SCREEN
+		screen.draw(win)
+		pg.display.update()
+
 
 if __name__ == "__main__":
-	main()
+    main()

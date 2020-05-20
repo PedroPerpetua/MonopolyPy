@@ -1,6 +1,5 @@
-import json
 from src.game.player import Player
-from src.game.fields import *
+from src.game.fields import field_deserialize, Property, Railroad, Utility, Tax, WildcardField, StartField, JailField, FreeParkingField, GoToJailField
 
 FIELDS_FILE = "src/fields.txt"
 
@@ -30,7 +29,7 @@ class Game:
 						taxes = []
 						for number in args[5].split(","):
 							taxes.append(int(number))
-						field_list.append(Property(args[1],int(args[2]),args[3],int(args[4]),taxes))
+						field_list.append(Property(args[1], int(args[2]), args[3], int(args[4]), taxes))
 					elif args[0] == "R":
 						field_list.append(Railroad(args[1]))
 					elif args[0] == "U":
@@ -47,6 +46,8 @@ class Game:
 						field_list.append(FreeParkingField())
 					elif args[0] == "C3":
 						field_list.append(GoToJailField())
+					else:
+						raise ValueError
 		return field_list
 
 	# Functions for board drawing
@@ -86,7 +87,9 @@ class Game:
 			setattr(result, key, info[key])
 		result.players = []
 		for player in info["players"]:
-			result.players.append(Player.deserialize(info["players"][player]))
+			player = Player.deserialize(info["players"][player])
+			player.game = result
+			result.players.append(player)
 		result.fields = []
 		for field in info["fields"]:
 			result.fields.append(field_deserialize(info["fields"][field]))

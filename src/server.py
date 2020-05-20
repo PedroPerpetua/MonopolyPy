@@ -1,18 +1,14 @@
-import socket, select
-import threading
+import socket
+import select
+from threading import Thread
 import json
 import time
 
 from lib import colors as cs
 from src.logger import write_log
 from src.game.game import Game
-from src.server_client import ServerClient
 
-# Tag constants for readability:
-CLIENT = 0
-DATA = 1
-ICON = 0
-NAME = 1
+MESSAGE_SIZE = 8192
 
 class Server:
 	def __init__(self, host, port, password, max_players):
@@ -20,90 +16,73 @@ class Server:
 		self.addr = (host, port)
 		self.password = password
 		self.max_players = max_players
-		# An id_tag is a list containing [client (object), [icon (int), name (string)]]
-		self.id_tags = [[None, []] for _ in range(max_players)]
+		self.clients = [None for _ in range(max_players)]
+		self.available_icons = ["Dummy", True, True, True, True, True, True, True, True]
 
+		self.in_game = False
 		self.game = None
 		self.requests = []
 
 
-	# Functions dealing with Tags
-	def add_tag(self, client):
-		tag = [client, []]
-		for index in range(self.max_players):
-			if self.id_tags[index][CLIENT] == None:
-				self.id_tags[index] = tag
+	def add_client(self, client):
+		for i in range(self.max_players):
+			if self.clients[i] is None:
+				self.clients[i] = client
 				break
-		return tag
 
-	def add_data(self, client, data_list):
-		for index in range(self.max_players):
-			if self.id_tags[index][CLIENT] == client:
-				self.id_tags[index][DATA] = data_list
-				return self.id_tags[index]
+	def remove_client(self, client):
+		for i in range(self.max_players):
+			if self.clients[i] == client:
+				if client.tag is not None:
+					self.available_icons[client.tag[1]] = True
+				self.clients[i] = None
 
-	def remove_tag(self, old_tag):
-		for index in range(self.max_players):
-			if self.id_tags[index] == old_tag:
-				self.id_tags[index] = [None, []]
+	def check_full(self):
+		for client in self.clients:
+			if client is None:
+				return False
+		return True
 
-	def get_tags(self):
-		tags = []
-		for tag in self.id_tags:
-			if tag[CLIENT] == None:
-				tags.append(None)
-			else:
-				tags.append(tag[DATA])
-		return tags
-
-	def check_state(self, value, tag=None):
-		''' value should be:
-		CLIENT returns True if server is full (except tag)
-		DATA return True if every player is ready
-		'''
-		if value == CLIENT:
-			for tag in self.id_tags:
-				if tag[CLIENT] == tag:
-					return True
-			return False
-		else:
-			for tag in self.id_tags:
-				if tag[DATA] == []:
-					return False
-			return True
+	def check_ready(self):
+		for client in self.clients:
+			if client is None:
+				return False
+			if not client.ready:
+				return False
+		return True
 
 
 	# Functions dealing with clients
-	def authenticate(self, tag):
-		pass_code = tag[CLIENT].receive_data()
+	def authenticate(self, client):
+		pass_code = client.receive_data()
 		return pass_code == self.password
 
-	def disconnect(self, tag, message):
-		self.remove_tag(tag)
-		tag[CLIENT].shutdown()
-		print(cs.green(f"[CLIENT {tag[CLIENT]}]") + f" DISCONNECTED: {message}")
+	def disconnect(self, client, message):
+		if isinstance(client, Client):
+			self.remove_client(client)
+			client.shutdown()
+			print(cs.green(f"[CLIENT {client}]") + f" DISCONNECTED: {message}")
 
-	def send_data(self, tag, data):
+	def send_data(self, client, data):
 		try:
 			message = json.dumps(data)
-			tag[CLIENT].conn.sendall(message.encode())
-			print(cs.red("[SERVER]") + f" sent <{data}> to {tag[CLIENT]}.")
+			client.conn.sendall(message.encode())
+			print(cs.red("[SERVER]") + f" sent <{data}> to {client}.")
 		except socket.error as se:
-			self.disconnect(tag, se)
+			self.disconnect(client, se)
 
-	def send_game(self):
-		# Because this function is only used when the game is full, no check for None
-		for tag in self.id_tags:
-			self.send_data(tag[CLIENT], "game_update")
-			# We sleep so the socket doesn't think it's the same message
-			time.sleep(0.2)
-			try:
-				game_data = json.dumps(self.game.serialize())
-				tag[CLIENT].conn.sendall(game_data.encode())
-			except socket.error as se:
-				self.disconnect(tag, se)
-
+	def send_all(self, message, data):
+		for client in self.clients:
+			if client is not None:
+				self.send_data(client, message)
+				time.sleep(0.2)
+				self.send_data(client, data)
 	
+	def send_icons(self):
+		self.send_all("icon_update", {"available_icons": self.available_icons})
+	def send_game(self):
+		self.send_all("game_update", self.game.serialize())
+
 	# Server functions
 	def search_players(self):
 		self.active = True
@@ -119,18 +98,21 @@ class Server:
 
 		# Main loop looking for connections
 		print(cs.red("[SERVER]") + "Awaiting connections...")
-		while self.active and not self.check_state(DATA):
+		while self.active and not self.check_ready():
 			try:
 				conn, addr = server_socket.accept()
-				new_tag = self.add_tag(ServerClient(conn,addr,self))
-				print(cs.yellow("[CONNECTION]") + f" New connection @ {new_tag[CLIENT]}.")
-				if self.check_state(CLIENT, new_tag):
-					self.disconnect(new_tag, "SERVER FULL")
-				elif self.authenticate(new_tag):
+				client = Client(conn, addr, self)
+				print(cs.yellow("[CONNECTION]") + f" New connection @ {client}.")
+				if self.check_full():
+					self.disconnect(client, "SERVER FULL")
+				elif self.authenticate(client):
 					print(cs.yellow("[CONNECTION]") + " Passed authentication!")
-					new_tag[CLIENT].start()
+					self.add_client(client)
+					self.send_data(client, 0)
+					client.start()
 				else:
-					self.disconnect(new_tag, "FAIELD AUTHENTICATION")
+					self.send_data(client, -1)
+					self.disconnect(client, "FAIELD AUTHENTICATION")
 			except socket.timeout:
 				continue
 			except socket.error as se:
@@ -141,9 +123,6 @@ class Server:
 			print(cs.red("[Server]") + " All players are ready!")
 			server_socket.close()
 
-	def start_game(self):
-		self.game = Game()
-
 	# Main thread handling communication and requests
 	def processing_thread(self):
 		pass
@@ -151,11 +130,99 @@ class Server:
 	def close_server(self, message):
 		print(cs.red("[SERVER]") + " Server closing.")
 		self.active = False
-		for tag in self.id_tags:
-			if tag[CLIENT]:
-				self.disconnect(tag, message)
+		for client in self.clients:
+			if client is not None:
+				self.disconnect(client, message)
 		write_log(self.requests)
+
+	def start_game(self):
+		self.in_game = True
+		self.game = Game()
+		player_tags = []
+		for player in self.clients:
+			player_tags += [player.tag]
+		self.game.create_players(player_tags)
+		self.send_game()
+
 
 	def run(self):
 		self.search_players()
 		self.start_game()
+
+	def get_info(self):
+		info = {}
+		info["tags"] = ["Dummy"]
+		for client in self.clients:
+			if client is None:
+				info["tags"] += [None]
+			elif not client.ready:
+				info["tags"] += [[]]
+			else:
+				info["tags"] += [client.tag]
+		return info
+
+class Client:
+	def __init__(self, conn, addr, server):
+		self.active = False
+		self.conn = conn
+		self.addr = addr
+		self.server = server
+
+		self.ready = False
+		self.tag = None
+
+	def start(self):
+		self.active = True
+		thread = Thread(target=self.processing_thread)
+		thread.start()
+
+	def receive_data(self):
+		try:
+			data = self.conn.recv(MESSAGE_SIZE).decode()
+			if data != "":
+				data = json.loads(data)
+				print(cs.green(f"[CLIENT {self}]") + f" received <{data}>.")
+				return data
+			else:
+				self.server.disconnect(self, "Empty string received.")
+				return None
+		except socket.error as se:
+			self.server.disconnect(self.tag, se)
+
+	def get_tag(self):
+		self.server.send_icons()
+		name = self.receive_data()
+		icon = self.receive_data()
+		if not name or not icon:
+			self.server.disconnect(self, "Invalid name or icon - DISCONNECTED")
+		else:
+			self.tag = [name, icon]
+			self.server.available_icons[icon] = False
+			self.server.send_icons()
+			self.ready = True
+
+	def shutdown(self):
+		self.active = False
+		self.conn.close()
+
+
+	# Main client thread
+	def processing_thread(self):
+		print(cs.green(f"[CLIENT {self}]") + " Started processing thread.")
+		self.get_tag()
+		while self.active:
+			if self.conn:
+				status = select.select([self.conn], [], [], 1)
+				if self.conn in status[0]:
+					received = self.receive_data()
+					if received and self.server.game:
+						self.server.requests.append([self.tag, received])
+		print(cs.green(f"[CLIENT {self}]") + " Finished processing thread.")
+
+
+	# Python functions
+	def __str__(self):
+		if self.tag:
+			return self.tag[0]
+		else:
+			return str(self.addr)

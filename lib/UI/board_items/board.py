@@ -1,11 +1,9 @@
 import pygame as pg
-from src.game.game import Game
-
+ 
 from lib.UI.board_items.icon_tile import IconTile
 from lib.UI.board_items.property_tile import PropertyTile
 from lib.UI.board_items.corner_tile import CornerTile
 from lib.UI.board_items.tooltip import Tooltip
-from lib.assets import Assets
 import lib.UI.board_items.constants as c
 
 # Readability
@@ -13,11 +11,11 @@ XVAR = 0
 YVAR = 1
 
 # Colors
-BORDER_COLOR = BLACK = (0,0,0)
+BORDER_COLOR = BLACK = (0, 0, 0)
 LIGHT_GRAY = (128, 128, 128)
 LIGHT_CYAN = (153, 255, 255)
-WHITE = (255,255,255)
-BG_GREEN = (143,188,114)
+WHITE = (255, 255, 255)
+BG_GREEN = (143, 188, 114)
 SELECTED_COLOR = (255, 128, 0)
 
 class Board:
@@ -35,11 +33,11 @@ class Board:
 		self.game = game
 		self.x = x
 		self.y = y
-		self.tiles = self.setup_tiles((x, y))
 
-		self.control_box = pg.rect.Rect(control_area)
+		self.control_box = pg.rect.Rect((x, y), control_area)
 		self.selected_index = None
 		self.tooltip = Tooltip(x, y)
+		self.tiles = self.setup_tiles((x, y))
 
 	def setup_tiles(self, coords):
 		fields = []
@@ -67,6 +65,18 @@ class Board:
 				fields.append(CornerTile(x, y))
 			else:
 				raise ValueError
+		
+		# We need to give initial values to these tiles
+		tile_hovered = None
+		for i in range(40):
+			tile = fields[i]
+			tile.update(self.game.get_field(i))
+			if tile.get_hovered():
+				tile_hovered = i
+		if tile_hovered is not None:
+			self.tooltip.update(self.game.get_tooltip(tile_hovered))
+		else:
+			self.tooltip.update(None)
 		return fields
 
 	def get_selected(self):
@@ -80,7 +90,7 @@ class Board:
 			tile.update(self.game.get_field(i))
 			if tile.get_hovered():
 				tile_hovered = i
-		if tile_hovered != None:
+		if tile_hovered is not None:
 			self.tooltip.update(self.game.get_tooltip(tile_hovered))
 		else:
 			self.tooltip.update(None)
@@ -97,10 +107,10 @@ class Board:
 		side_interior = c.SIZE - 2 * c.SIDE_LARGE
 		pg.draw.rect(window, BG_GREEN, ((self.x + c.SIDE_LARGE, self.y + c.SIDE_LARGE), (side_interior, side_interior)))
 		x, y, w, h = self.tooltip.get_dimensions()
-		pg.draw.rect(window, BORDER_COLOR, ((x - c.BORDER_SIZE, y - c.BORDER_SIZE), (w + 2 * c.BORDER_SIZE,h + 2 * c.BORDER_SIZE)))
+		pg.draw.rect(window, BORDER_COLOR, ((x - c.BORDER_SIZE, y - c.BORDER_SIZE), (w + 2 * c.BORDER_SIZE, h + 2 * c.BORDER_SIZE)))
 
 		# We also draw the border on the selected tile
-		if self.selected_index != None:
+		if self.selected_index is not None:
 			border_rect = self.tiles[self.selected_index].get_border()
 			pg.draw.rect(window, SELECTED_COLOR, border_rect)
 

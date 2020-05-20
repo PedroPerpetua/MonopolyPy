@@ -8,5 +8,5 @@ def write_log(requests):
 	if len(requests) == 0:
 		log_file.write("Nothing happened!")
 	else:
-		for request in self.reuqests:
+		for request in requests:
 			log_file.write(str(request) + "\n")

@@ -1,10 +1,8 @@
 from lib.assets import Assets
 from lib.UI.items import image, inputbox, textlabel, numberpicker, imagebutton, playerbox
-import pygame as pg
 import os
 
-# SCREEN_SIZE = (300, 300)
-BG_COLOR = (143,188,114)
+BG_COLOR = (143, 188, 114)
 
 class StartScreen:
 	def __init__(self):
@@ -15,7 +13,7 @@ class StartScreen:
 	def setup_items(self):
 		items = {}
 		items["image"] = {}
-		items["textlabel"]= {}
+		items["textlabel"] = {}
 		items["inputbox"] = {}
 		items["numberpicker"] = {}
 		items["button"] = {}
@@ -25,7 +23,7 @@ class StartScreen:
 		items["textlabel"]["port"] = textlabel.TextLabel(20, 156, "Port", 20, Assets.PIXEL)
 		items["textlabel"]["players"] = textlabel.TextLabel(160, 156, "Players", 20, Assets.PIXEL)
 		items["inputbox"]["port"] = inputbox.InputBox(20, 171, 120, 20, Assets.ARIAL, True)
-		items["numberpicker"]["players"] = numberpicker.NumberPicker(160, 171, 120, 
+		items["numberpicker"]["players"] = numberpicker.NumberPicker(160, 171, 120,
 			[Assets.MINUS_SELECTED, Assets.MINUS_UNSELECTED], [Assets.PLUS_SELECTED, Assets.PLUS_UNSELECTED], 4, 2, 8)
 		items["textlabel"]["password"] = textlabel.TextLabel(20, 204, "Password", 20, Assets.PIXEL)
 		items["inputbox"]["password"] = inputbox.InputBox(20, 219, 260, 20, Assets.ARIAL)
@@ -147,9 +145,9 @@ class QueueScreen:
 			for item in self.items[item_type]:
 				self.items[item_type][item].update(events)
 
-	def update_players(self, id_list):
-		for slot in range(1, len(id_list) + 1):
-			self.items["playerbox"][slot].update_player(id_list[slot - 1])
+	def update_players(self, info):
+		for slot in range(1, len(info["tags"])):
+			self.items["playerbox"][slot].update_player(info["tags"][slot])
 
 class InGameScreen:
 	def __init__(self):
@@ -161,7 +159,7 @@ class InGameScreen:
 		items["button"] = {}
 		items["image"]["logo"] = image.Image(22, 0, Assets.APP_LOGO)
 		items["image"]["message"] = image.Image(18, 140, Assets.GAME_STARTED)
-		items["button"]["quit"] = imagebutton.ImageButton(92, 245,[Assets.QUIT_SELECTED, Assets.QUIT_UNSELECTED], True)
+		items["button"]["quit"] = imagebutton.ImageButton(92, 245, [Assets.QUIT_SELECTED, Assets.QUIT_UNSELECTED], True)
 		return items
 
 	def draw(self, window):

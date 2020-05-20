@@ -45,24 +45,29 @@ class Property:
 		info = {}
 		info["color"] = self.color
 		info["houses"] = self.houses
-		info["mortaged"]= self.mortaged
+		info["mortaged"] = self.mortaged
 		return info
 
 	def get_tooltip(self):
 		info = {}
 		info["type"] = "property"
 		info["name"] = self.name
-		if self.owner == None:
+		if self.owner is not None:
 			info["owner"] = "Unowned"
 			info["value"] = "Price: " + str(self.price) + "€"
 		else:
 			info["owner"] = self.owner.name
-			info["value"] = "Tax: " + str(self.taxes[self.houses]) + "€"
+			if self.mortaged:
+				info["value"] = "MORTAGED!"
+			else:
+				info["value"] = "Tax: " + str(self.taxes[self.houses]) + "€"
 		info["color"] = get_rgb(self.color)
 		info["houses"] = "Houses: " + str(self.houses)
 		info["house_price"] = "House price: " + str(self.house_price) + "€"
 		return info
 
+	def do_action(self, player, roll):
+		pass
 
 	def serialize(self):
 		info = vars(self)
@@ -101,14 +106,16 @@ class Railroad:
 		info["type"] = "single"
 		info["name"] = self.name
 		info["color"] = (128, 128, 128) # Light-Gray
-		if self.owner == None:
+		if self.owner is not None:
 			info["owner"] = "Unowned"
 			info["label"] = "Price: " + str(self.price) + "€"
 		else:
 			info["owner"] = self.owner.name
-			info["label"]= "Tax: " + str(self.owner.get_rail()) + "€"
+			info["label"] = "Tax: " + str(self.owner.get_rail()) + "€"
 		return info
 
+	def do_action(self, player, roll):
+		pass
 
 	def serialize(self):
 		info = vars(self)
@@ -151,9 +158,9 @@ class Utility:
 		info["type"] = "single"
 		info["name"] = self.name
 		info["color"] = (153, 255, 255) # Light-Cyan
-		if self.owner == None:
+		if self.owner is not None:
 			info["owner"] = "Unowned"
-			info["label"]= "Price: " + str(self.price) + "€"
+			info["label"] = "Price: " + str(self.price) + "€"
 		else:
 			info["owner"] = self.owner.name
 			info["label"] = "Tax: " + str(self.owner.get_util()) + " times the dice roll"
