@@ -45,10 +45,9 @@ class Player:
 	def has_monopoly(self, color):
 		if color in ["railroad, utility"]:
 			return False
-		elif color in ["brown", "blue"]:
+		if color in ["brown", "blue"]:
 			return len(self.contracts[color] == 2)
-		else:
-			return len(self.contracts[color] == 3)
+		return len(self.contracts[color] == 3)
 
 	def can_place_house(self, field):
 		if field.owner != self:
@@ -57,6 +56,7 @@ class Player:
 			return False
 		if field.houses == 5:
 			return False
+		return True
 
 	def move(self, number):
 		new_pos = self.pos + number

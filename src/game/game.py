@@ -72,9 +72,9 @@ class Game:
 		info = {}
 		info["MAX_PLAYERS"] = self.MAX_PLAYERS
 		info["current_player"] = self.current_player
-		info["players"] = {}
+		info["players"] = []
 		for i in range(self.MAX_PLAYERS):
-			info["players"][i] = self.players[i].serialize()
+			info["players"].append(self.players[i].serialize())
 		info["fields"] = {}
 		for i in range(len(self.fields)):
 			info["fields"][i] = self.fields[i].serialize()

@@ -185,7 +185,7 @@ class InGameScreen:
 
 	@staticmethod
 	def screen_loop(window, info):
-		screen = QueueScreen(info["num_players"])
+		screen = InGameScreen()
 		while True:
 			pg.time.delay(100)
 			events = pg.event.get()

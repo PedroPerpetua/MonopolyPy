@@ -3,6 +3,7 @@ import select
 import threading
 import json
 from src.game.game import Game
+from src.exceptions import WrongPasswordException, ServerFullException, ServerOfflineException
 
 MESSAGE_SIZE = 8192
 
@@ -27,9 +28,11 @@ class Client:
 			self.send_data(self.password)
 			response = self.receive_data()
 			if response == -1:
-				raise ConnectionAbortedError
-		except socket.gaierror:
-			raise ConnectionRefusedError
+				raise WrongPasswordException
+			if response == -2:
+				raise ServerFullException
+		except ConnectionRefusedError:
+			raise ServerOfflineException
 
 	def disconnect(self):
 		self.active = False

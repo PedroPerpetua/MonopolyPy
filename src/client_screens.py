@@ -3,6 +3,7 @@ from lib.UI.items import image, inputbox, textlabel, imagebutton, iconselector
 from lib.UI.board_items import board
 from os import startfile as open_link
 from src.client import Client
+from src.exceptions import WrongPasswordException, ServerFullException, ServerOfflineException
 import pygame as pg
 
 BG_COLOR = (143, 188, 114)
@@ -65,9 +66,11 @@ class StartScreen:
 					client.connect()
 					info["client"] = client
 					break
-				except ConnectionAbortedError:
+				except WrongPasswordException:
 					ErrorBox.screen_loop(window, "Wrong Password")
-				except ConnectionRefusedError:
+				except ServerFullException:
+					ErrorBox.screen_loop(window, "Server is full")
+				except ServerOfflineException:
 					ErrorBox.screen_loop(window, "Server Offline")
 			screen.update(events)
 			screen.draw(window)

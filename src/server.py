@@ -102,6 +102,7 @@ class Server:
 				client = Client(conn, addr, self)
 				print(cs.yellow("[CONNECTION]") + f" New connection @ {client}.")
 				if self.check_full():
+					self.send_data(client, -2)
 					self.disconnect(client, "SERVER FULL")
 				elif self.authenticate(client):
 					print(cs.yellow("[CONNECTION]") + " Passed authentication!")
@@ -135,11 +136,10 @@ class Server:
 
 	def start_game(self):
 		self.in_game = True
-		self.game = Game()
 		player_tags = []
 		for player in self.clients:
 			player_tags += [player.tag]
-		self.game.create_players(player_tags)
+		self.game = Game(player_tags)
 		self.send_game()
 
 

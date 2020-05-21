@@ -1,4 +1,3 @@
-import os.path
 import pygame as pg
 
 class ImageButton:
@@ -38,6 +37,7 @@ class ImageButton:
 				x, y = event.pos
 				if self.box.collidepoint(x, y):
 					self.clicked = True
+					self.highlited = False
 
 	def switch(self, state):
 		self.clickable = state

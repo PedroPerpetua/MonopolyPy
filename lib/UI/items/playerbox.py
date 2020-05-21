@@ -1,8 +1,8 @@
 import pygame as pg
 from lib.assets import Assets
 
-TEXT_COLOR = BLACK = (0,0,0)
-BG_COLOR = LIGHT_GRAY = (153,153,153)
+TEXT_COLOR = BLACK = (0, 0, 0)
+BG_COLOR = LIGHT_GRAY = (153, 153, 153)
 X_POSITIONS = ["Dummy!", 20, 20, 20, 20, 160, 160, 160, 160]
 Y_POSITIONS = ["Dummy!", 106, 153, 200, 247, 106, 153, 200, 247]
 
@@ -29,7 +29,7 @@ class PlayerBox:
 			window.blit(self.locked, self.box)
 		else:
 			pg.draw.rect(window, BG_COLOR, self.box)
-			if self.player_id == None:
+			if self.player_id is None:
 				text = self.font.render("Waiting" + self.update_dots(), True, TEXT_COLOR)
 				window.blit(text, (self.box.left + 6, self.box.top + 6))
 			else:
@@ -52,7 +52,7 @@ class PlayerBox:
 				self.blink %= 350
 				self.cycle = (self.cycle + 1)%4
 			dots = ""
-			for i in range(self.cycle):
+			for _ in range(self.cycle):
 				dots += "."
 			return dots
 
