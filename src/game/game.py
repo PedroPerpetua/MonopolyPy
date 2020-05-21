@@ -86,8 +86,8 @@ class Game:
 		for key in info:
 			setattr(result, key, info[key])
 		result.players = []
-		for player in info["players"]:
-			player = Player.deserialize(info["players"][player])
+		for player_info in info["players"]:
+			player = Player.deserialize(player_info)
 			player.game = result
 			result.players.append(player)
 		result.fields = []
