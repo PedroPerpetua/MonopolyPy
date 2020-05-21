@@ -1,7 +1,6 @@
 import pygame as pg
-import os.path
 
-TEXT_COLOR = BLACK = (0,0,0)
+TEXT_COLOR = BLACK = (0, 0, 0)
 
 class TextLabel:
 	def __init__(self, x, y, text, font_size, font):

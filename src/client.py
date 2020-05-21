@@ -28,7 +28,7 @@ class Client:
 			response = self.receive_data()
 			if response == -1:
 				raise ConnectionAbortedError
-		except OSError:
+		except socket.gaierror:
 			raise ConnectionRefusedError
 
 	def disconnect(self):

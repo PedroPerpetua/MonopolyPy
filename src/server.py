@@ -85,17 +85,15 @@ class Server:
 
 	# Server functions
 	def search_players(self):
-		self.active = True
-
 		# Prepares the socket
 		server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		try:
 			server_socket.bind(self.addr)
+			server_socket.settimeout(1)
+			server_socket.listen(0)
 		except socket.error as se:
 			self.close_server(se)
-		server_socket.settimeout(1)
-		server_socket.listen(0)
-
+	
 		# Main loop looking for connections
 		print(cs.red("[SERVER]") + "Awaiting connections...")
 		while self.active and not self.check_ready():
@@ -128,11 +126,11 @@ class Server:
 		pass
 
 	def close_server(self, message):
-		print(cs.red("[SERVER]") + " Server closing.")
+		print(cs.red("[SERVER]") + " Server closing: " + str(message))
 		self.active = False
 		for client in self.clients:
 			if client is not None:
-				self.disconnect(client, message)
+				self.disconnect(client, str(message))
 		write_log(self.requests)
 
 	def start_game(self):
@@ -146,8 +144,11 @@ class Server:
 
 
 	def run(self):
-		self.search_players()
-		self.start_game()
+		self.active = True
+		if self.active:
+			self.search_players()
+		if self.active:
+			self.start_game()
 
 	def get_info(self):
 		info = {}

@@ -75,8 +75,3 @@ class InputBox:
 			self.cursor_visible = False
 			self.cursor_blink = 0
 		self.cursor_clock.tick()
-
-
-
-	def get_text(self):
-		return self.text

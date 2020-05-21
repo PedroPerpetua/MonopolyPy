@@ -33,11 +33,12 @@ class Board:
 		self.game = game
 		self.x = x
 		self.y = y
+		self.tiles = self.setup_tiles((x, y))
 
 		self.control_box = pg.rect.Rect((x, y), control_area)
 		self.selected_index = None
 		self.tooltip = Tooltip(x, y)
-		self.tiles = self.setup_tiles((x, y))
+		
 
 	def setup_tiles(self, coords):
 		fields = []
@@ -67,16 +68,9 @@ class Board:
 				raise ValueError
 		
 		# We need to give initial values to these tiles
-		tile_hovered = None
 		for i in range(40):
 			tile = fields[i]
 			tile.update(self.game.get_field(i))
-			if tile.get_hovered():
-				tile_hovered = i
-		if tile_hovered is not None:
-			self.tooltip.update(self.game.get_tooltip(tile_hovered))
-		else:
-			self.tooltip.update(None)
 		return fields
 
 	def get_selected(self):
@@ -88,7 +82,7 @@ class Board:
 		for i in range(40):
 			tile = self.tiles[i]
 			tile.update(self.game.get_field(i))
-			if tile.get_hovered():
+			if tile.hovered:
 				tile_hovered = i
 		if tile_hovered is not None:
 			self.tooltip.update(self.game.get_tooltip(tile_hovered))

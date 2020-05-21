@@ -21,68 +21,15 @@ def main():
 	icon = Assets.APP_ICON
 	pg.display.set_icon(icon)
 
-    # START SCREEN
-	screen = StartScreen()
-	while not screen.check_end():
-		pg.time.delay(100)
-		events = pg.event.get()
-		for event in events:
-			if event.type == pg.QUIT:
-				pg.quit()
-				exit(0)
-		screen.update(events)
-
-		# EVENTS INSIDE THIS SCREEN
-		screen.draw(win)
-		pg.display.update()
-
-	# PROCESSES DATA AND CREATES THE SERVER
-	values = screen.get_values()
-	server = Server(values[0], values[1], values[2], values[3])
-	thread = Thread(target=server_thread, args=[server])
-	thread.start()
-
-	# WAITING FOR PLAYERS SCREEN
-	screen = QueueScreen(values[3])
-	waiting_players_screen = True
-	while waiting_players_screen:
-		pg.time.delay(100)
-		events = pg.event.get()
-		for event in events:
-			if event.type == pg.QUIT:
-				pg.quit()
-				server.close_server("PG QUIT")
-				exit(0)
-		screen.update(events)
-
-		# EVENTS INSIDE THIS SCREEN
-		screen.update_players(server.get_info())
-		if server.game:
-			waiting_players_screen = False
-
-		screen.draw(win)
-		pg.display.update()
-
-	# IN GAME SCREEN
-	screen = InGameScreen()
-	while not screen.check_end():
-		pg.time.delay(100)
-		events = pg.event.get()
-		for event in events:
-			if event.type == pg.QUIT:
-				pg.quit()
-				server.close_server("PG QUIT")
-				exit(0)
-		screen.update(events)
-
-		# EVENTS INSIDE THIS SCREEN
-		screen.draw(win)
-		pg.display.update()
+	# This will store all choices the user makes along the problem (number of players, ip, port, the actual server...)
+	options = {}
 	
-	pg.quit()
-	server.close_server("PG QUIT")
-	exit(0)
-
+	StartScreen.screen_loop(win, options)
+	options["server"] = Server(options["host"], options["port"], options["password"], options["num_players"])
+	thread = Thread(target=server_thread, args=[options["server"]])
+	thread.start()
+	QueueScreen.screen_loop(win, options)
+	InGameScreen.screen_loop(win, options)
 
 if __name__ == "__main__":
 	main()

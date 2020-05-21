@@ -18,9 +18,6 @@ class IconTile:
 		self.info = None
 		# Info should contain: icons (players standing here)
 
-
-	def get_hovered(self):
-		return self.hovered
 	def get_border(self):
 		return ((self.box.left - c.BORDER_SIZE * 2, self.box.top - c.BORDER_SIZE * 2),
 			(self.box.width + c.BORDER_SIZE * 4, self.box.height + c.BORDER_SIZE * 4))
@@ -42,5 +39,3 @@ class IconTile:
 		for i in range(len(self.info["players"])):
 			offset_x, offset_y = positions[i]
 			window.blit(Assets.ICONS[self.info["players"][i]], (self.box.centerx + offset_x, self.box.centery + offset_y))
-
-	

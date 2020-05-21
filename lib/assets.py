@@ -32,6 +32,8 @@ class Assets:
 	QUIT_UNSELECTED = None
 	INTERNET_SELECTED = None
 	INTERNET_UNSELECTED = None
+	X_SELECTED = None
+	X_UNSELECTED = None
 
 
 	# Client Specific
@@ -103,7 +105,8 @@ def import_assets(app):
 		Assets.RETURN_UNSELECTED = load_image("server/return_unselected")
 		Assets.INTERNET_SELECTED = load_image("server/internet_selected")
 		Assets.INTERNET_UNSELECTED = load_image("server/internet_unselected")
-		
+		Assets.X_SELECTED = load_image("server/x_selected")
+		Assets.X_UNSELECTED = load_image("server/x_unselected")	
 
 	elif app == "Client":
 		Assets.APP_ICON = load_image("client/app_icon", False)
@@ -121,7 +124,6 @@ def import_assets(app):
 		Assets.SUBMIT_SELECTED = load_image("client/submit_selected")
 		Assets.SUBMIT_UNSELECTED = load_image("client/submit_unselected")
 
-
 		Assets.CORNER_JAIL = load_image("client/board/corner_jail")
 		Assets.CORNER_FREEPARKING = load_image("client/board/corner_freeparking")
 		Assets.CORNER_GOTOJAIL = load_image("client/board/corner_gotojail")
@@ -138,8 +140,8 @@ def import_assets(app):
 		Assets.TAX_LUXURY = load_image("client/board/tax_luxury")
 		Assets.TAX_INCOME = load_image("client/board/tax_income")
 		Assets.TRAIN = load_image("client/board/train")
-	else:
-		raise ImportError
+		Assets.X_SELECTED = load_image("client/x_selected")
+		Assets.X_UNSELECTED = load_image("client/x_unselected")
 	#Comon to both
 	Assets.PIXEL = load_font("Pixel")
 	Assets.ARIAL = load_font("arial")

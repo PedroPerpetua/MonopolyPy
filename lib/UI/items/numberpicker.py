@@ -1,10 +1,9 @@
-import os.path
 import pygame as pg
 from lib.assets import Assets
 
 
-BG_COLOR = WHITE = (255,255,255)
-TEXT_COLOR = BLACK = (0,0,0)
+BG_COLOR = WHITE = (255, 255, 255)
+TEXT_COLOR = BLACK = (0, 0, 0)
 
 class NumberPicker:
 	def __init__(self, x, y, widht, minus_images, plus_images, default, min_num, max_num):
@@ -46,7 +45,7 @@ class NumberPicker:
 		self.minus_highlight = False
 		self.plus_highligt = False
 
-		x,y = pg.mouse.get_pos()
+		x, y = pg.mouse.get_pos()
 		if self.minus_box.collidepoint(x, y):
 			self.minus_highlight = True
 		elif self.plus_box.collidepoint(x, y):
@@ -59,7 +58,3 @@ class NumberPicker:
 					self.value += -1
 				elif self.plus_box.collidepoint(x, y) and self.value < self.high:
 					self.value += 1
-		self.surface = self.font.render(str(self.value), True, TEXT_COLOR)
-
-	def get_number(self):
-		return self.value

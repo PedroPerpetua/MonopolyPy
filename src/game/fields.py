@@ -52,7 +52,7 @@ class Property:
 		info = {}
 		info["type"] = "property"
 		info["name"] = self.name
-		if self.owner is not None:
+		if self.owner is None:
 			info["owner"] = "Unowned"
 			info["value"] = "Price: " + str(self.price) + "€"
 		else:
@@ -106,7 +106,7 @@ class Railroad:
 		info["type"] = "single"
 		info["name"] = self.name
 		info["color"] = (128, 128, 128) # Light-Gray
-		if self.owner is not None:
+		if self.owner is None:
 			info["owner"] = "Unowned"
 			info["label"] = "Price: " + str(self.price) + "€"
 		else:
@@ -158,7 +158,7 @@ class Utility:
 		info["type"] = "single"
 		info["name"] = self.name
 		info["color"] = (153, 255, 255) # Light-Cyan
-		if self.owner is not None:
+		if self.owner is None:
 			info["owner"] = "Unowned"
 			info["label"] = "Price: " + str(self.price) + "€"
 		else:

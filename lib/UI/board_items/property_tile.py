@@ -27,8 +27,6 @@ class PropertyTile:
 			box = pg.Rect(position, (PropertyTile.SIDE_SMALL, PropertyTile.SIDE_LARGE))
 		return (box, pos)
 
-	def get_hovered(self):
-		return self.hovered
 	def get_border(self):
 		return ((self.box.left - c.BORDER_SIZE * 2, self.box.top - c.BORDER_SIZE * 2),
 			(self.box.width + c.BORDER_SIZE * 4, self.box.height + c.BORDER_SIZE * 4))
