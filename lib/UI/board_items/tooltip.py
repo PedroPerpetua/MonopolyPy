@@ -1,87 +1,50 @@
 import pygame as pg
-import lib.UI.board_items.constants as c
-from lib.assets import Assets
+from lib.assets import Assets, Colors
 
 TEXT_COLOR = BLACK = (0, 0, 0)
-BG_COLOR = (143,188,114)
+BG_COLOR = (143, 188, 114)
 WHITE = (255, 255, 255)
 
 class Tooltip:
-	def __init__(self, board_x, board_y):
-		x, y = c.TOOLTIP_POS
-		self.box = pg.Rect((x + board_x, y+ board_y), c.TOOLTIP_SIZE)
+	def __init__(self, x, y):
+		self.box = pg.Rect((x, y), (476, 100))
 		self.name_font = pg.font.Font(Assets.PIXEL, 32)
-		self.line_font = pg.font.Font(Assets.ARIAL, 24)
+		self.text_font = pg.font.Font(Assets.ARIAL, 24)
 		self.info = None
 
-	def get_dimensions(self):
-		return [self.box.left, self.box.top, self.box.width, self.box.height]
-
-	# Drawing functions
-	def update(self, info):
+	def update_info(self, info):
 		self.info = info
-
+		
 	def draw(self, window):
-
-		def draw_name(name_str):
-			name = self.name_font.render(name_str, True, TEXT_COLOR)
-			name_rect = name.get_rect()
-			window.blit(name, (self.box.centerx - name_rect.centerx, self.box.top + 5))
-
-		if self.info:
-			mode = self.info["type"]
-			if mode == "property":
-				# Drawing the box
-				pg.draw.rect(window, self.info["color"], self.box)
-				# Drawing the name
-				name = self.name_font.render(self.info["name"], True, TEXT_COLOR)
-				name_rect = name.get_rect()
-				window.blit(name, (self.box.centerx - name_rect.centerx, self.box.top + 5))
-				# Drawing the owner
-				owner = self.line_font.render(self.info["owner"], True, TEXT_COLOR)
-				window.blit(owner, (self.box.left + 123 - owner.get_rect().centerx, self.box.top + 32))
-				# Drawing the value
-				value = self.line_font.render(self.info["value"], True, TEXT_COLOR)
-				window.blit(value, (self.box.left + 123 - value.get_rect().centerx, self.box.bottom - 35))
-				# Drawing the number of houses
-				houses = self.line_font.render(self.info["houses"], True, TEXT_COLOR)
-				window.blit(houses, (self.box.right - 123 - houses.get_rect().centerx, self.box.top + 32))
-				# Drawing the price of each house
-				house_price = self.line_font.render(self.info["house_price"], True, TEXT_COLOR)
-				window.blit(house_price, (self.box.right - 123 - house_price.get_rect().centerx, self.box.bottom - 35))
-			elif mode == "single":
-				# Drawing the box
-				pg.draw.rect(window, self.info["color"], self.box)
-				# Drawing the name
-				name = self.name_font.render(self.info["name"], True, TEXT_COLOR)
-				name_rect = name.get_rect()
-				window.blit(name, (self.box.centerx - name_rect.centerx, self.box.top + 5))
-				# Drawing the owner
-				owner = self.line_font.render(self.info["owner"], True, TEXT_COLOR)
-				window.blit(owner, (self.box.centerx - owner.get_rect().centerx, self.box.top + 32))
-				# Drawing the label
-				label = self.line_font.render(self.info["label"], True, TEXT_COLOR)
-				window.blit(label, (self.box.centerx - label.get_rect().centerx, self.box.bottom - 35))
-			elif mode == "single_label":
-				# Drawing the box
-				pg.draw.rect(window, self.info["color"], self.box)
-				# Drawing the name
-				name = self.name_font.render(self.info["name"], True, TEXT_COLOR)
-				name_rect = name.get_rect()
-				window.blit(name, (self.box.centerx - name_rect.centerx, self.box.centery - name_rect.centery - 10))
-				# Drawing the label
-				label = self.line_font.render(self.info["label"], True, TEXT_COLOR)
-				label_rect = label.get_rect()
-				window.blit(label, (self.box.centerx - label_rect.centerx, self.box.centery - label_rect.centery + 15))
-			elif mode == "wildcard":
-				# Drawing the box
-				pg.draw.rect(window, self.info["color"], self.box)
-				# Drawing the name
-				name = self.name_font.render(self.info["name"], True, TEXT_COLOR)
-				name_rect = name.get_rect()
-				window.blit(name, (self.box.centerx - name_rect.centerx, self.box.centery - name_rect.centery + 5))
-				# Drawing the icons
-				window.blit(self.info["image"], (self.box.left + 30, self.box.centery - 16))
-				window.blit(self.info["image"], (self.box.right - 30 - 32, self.box.centery - 16))
+		def write_name(name, offsetx, offsety):
+			name = self.name_font.render(name, True, Colors.BLACK)
+			name_box = name.get_rect()
+			window.blit(name, (self.box.centerx - name_box.centerx + offsetx, self.box.centery - name_box.centery + offsety))
+		def write_text(text, offsetx, offsety):
+			text = self.text_font.render(text, True, Colors.BLACK)
+			text_box = text.get_rect()
+			window.blit(text, (self.box.centerx - text_box.centerx + offsetx, self.box.centery - text_box.centery + offsety))
+		def put_image(image, offsetx, offsety):
+			image_box = image.get_rect()
+			window.blit(image, (self.box.centerx - image_box.centerx + offsetx, self.box.centery - image_box.centery + offsety))
+		if self.info is None:
+			pg.draw.rect(window, Colors.BG_COLOR, self.box)
 		else:
-			pg.draw.rect(window, BG_COLOR, self.box)
+			pg.draw.rect(window, self.info["color"], self.box)
+			if self.info["type"] == "label":
+				write_name(self.info["name"], 0, -10)
+				write_text(self.info["label"], 0, 15)
+			elif self.info["type"] == "simple":
+				write_name(self.info["name"], 0, -20)
+				write_text(self.info["owner"], 0, 0)
+				write_text(self.info["value"], 0, +24)
+			elif self.info["type"] == "property":
+				write_name(self.info["name"], 0, -20)
+				write_text(self.info["owner"], -100, 0)
+				write_text(self.info["value"], -100, +24)
+				write_text(self.info["houses"], +100, 0)
+				write_text(self.info["house_price"], +100, +24)
+			elif self.info["type"] == "wildcard":
+				write_name(self.info["name"], 0, +4)
+				put_image(self.info["image"], -200, 0)
+				put_image(self.info["image"], +200, 0)

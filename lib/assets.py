@@ -1,7 +1,27 @@
 import pygame as pg
 import os
 
-COLORKEY = (255, 0, 255)
+class Colors:
+	COLORKEY = (255, 0, 255)
+	BG_COLOR = (143, 188, 114)
+	WHITE = (255, 255, 255)
+	BLACK = (0, 0, 0)
+	LIGHT_GRAY = (128, 128, 128)
+	LIGHT_CYAN = (153, 255, 255)
+	BROWN = (51, 25, 0)
+	LIGHT_BLUE = (102, 178, 255)
+	MAGENTA = (204, 0, 204)
+	ORANGE = (204, 102, 0)
+	RED = (255, 0, 0)
+	YELLOW = (204, 204, 0)
+	GREEN = (0, 128, 0)
+	BLUE = (48, 79, 254)
+
+	@staticmethod
+	def get_color(string):
+		if string in ["BROWN", "LIGHT_BLUE", "MAGENTA", "ORANGE", "RED", "YELLOW", "GREEN", "BLUE"]:
+			return getattr(Colors, string)
+		raise ValueError
 
 class Assets:
 	#Common to both
@@ -46,8 +66,8 @@ class Assets:
 	CORNER_JAIL = None
 	CORNER_FREEPARKING = None
 	CORNER_GOTOJAIL = None
-	HOTEL_LANDSCAPE = None
-	HOTEL_PORTRAIT = None
+	HOTEL_VERTICAL = None
+	HOTEL_HORIZONTAL = None
 	HOUSE_EMPTY = None
 	HOUSE_FILLED = None
 	MORTAGED = None
@@ -66,13 +86,13 @@ def import_assets(app):
 			image = pg.image.load("assets/images/" + image_name + ".png").convert()
 		else:
 			image = pg.image.load("assets/images/" + image_name + ".png")
-		image.set_colorkey(COLORKEY)
+		image.set_colorkey(Colors.COLORKEY)
 		return image
 
 	def load_icon(icon_number):
 		for size in ["SMALL", "MEDIUM", "LARGE"]:
 			icon = pg.image.load("assets/images/icons/icon_" + str(icon_number) + "_" + size + ".png").convert()
-			icon.set_colorkey(COLORKEY)
+			icon.set_colorkey(Colors.COLORKEY)
 			Assets.ICONS[size] += [icon]
 
 	def load_font(font_name):
@@ -128,8 +148,8 @@ def import_assets(app):
 		Assets.CORNER_FREEPARKING = load_image("client/board/corner_freeparking")
 		Assets.CORNER_GOTOJAIL = load_image("client/board/corner_gotojail")
 		Assets.CORNER_START = load_image("client/board/corner_start")
-		Assets.HOTEL_LANDSCAPE = load_image("client/board/hotel_landscape")
-		Assets.HOTEL_PORTRAIT = load_image("client/board/hotel_portrait")
+		Assets.HOTEL_VERTICAL = load_image("client/board/hotel_vertical")
+		Assets.HOTEL_HORIZONTAL = load_image("client/board/hotel_horizontal")
 		Assets.HOUSE_EMPTY = load_image("client/board/house_empty")
 		Assets.HOUSE_FILLED = load_image("client/board/house_filled")
 		Assets.MORTAGED = load_image("client/board/mortaged")
