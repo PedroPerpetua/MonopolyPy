@@ -8,6 +8,11 @@ PLAYER_OFFSETS = ("Dummy", [(-8, -8)], [(-16, -8), (0, -8)], [(-16, -16), (0, -1
                 [(-16, -16), (0, -16), (-16, 0), (0, 0), (-8, -8)], [(-16, -16), (0, -16), (-16, 0), (0, 0), (-16, -8), (0, -8)],
                 [(-16, -16), (0, -16), (-16, 0), (0, 0), (-16, -16), (0, -16), (-8, 0)], 
                 [(-16, -16), (0, -16), (-16, 0), (0, 0), (-16, -16), (0, -16), (-16, 0), (0, 0)])
+VISIT_OFFSETS = ("Dummy", [(-16, 0)], [(-16, -48), (+32, 0)], [(-16, -76), (-16, -20), (+32, 0)], [(-16, -76), (-16, 20), (+4, 0), (+60, 0)],
+                [(-16, -76), (-16, 20), (+4, 0), (+60, 0), (-16, 0)], [(-16, -76), (-16, 20), (+4, 0), (+60, 0), (-16, -48), (+32, 0)],
+                [(-16, -76), (-16, 20), (+4, 0), (+60, 0), (-16, -76), (-16, -20), (+32, 0)],
+                [(-16, -76), (-16, 20), (+4, 0), (+60, 0), (-16, -76), (-16, 20), (+4, 0), (+60, 0)]
+)
 
 class Tile:
     def __init__(self, x, y):
@@ -19,7 +24,7 @@ class Tile:
         self.hovered = None
     def update(self, info):
         self.info = info
-        self.hovered = True
+        self.hovered = False
         if self.box.collidepoint(pg.mouse.get_pos()):
             self.hovered = True
     def draw_players(self, window, centerx, centery, player_list):
@@ -34,8 +39,11 @@ class VerticalTile(Tile):
         self.box = pg.rect.Rect((x, y), (SIDE_SMALL, SIDE_LARGE))
         self.inner_box = pg.rect.Rect((x + BORDER_SIZE, y + BORDER_SIZE), (SIDE_SMALL - 2*BORDER_SIZE, SIDE_LARGE - 2*BORDER_SIZE))
         self.side = side
-    def draw(self, window):
-        pg.draw.rect(window, Colors.BLACK, self.box)
+    def draw(self, window, selected=False):
+        if selected:
+            pg.draw.rect(window, Colors.SELECTED, self.box)
+        else:
+            pg.draw.rect(window, Colors.BLACK, self.box)
         if self.info is not None:
             pg.draw.rect(window, self.info["color"], self.inner_box)
             if self.info["type"] == "icon":
@@ -56,7 +64,6 @@ class VerticalTile(Tile):
                             window.blit(Assets.HOUSE_FILLED, (basex + i * 13, basey))
                         else:
                             window.blit(Assets.HOUSE_EMPTY, (basex + i * 13, basey))
-                
                 if self.info["mortaged"]:
                     window.blit(Assets.MORTAGED, (centerx - 16, centery - 16))
                 self.draw_players(window, centerx, centery, self.info["players"])
@@ -67,9 +74,11 @@ class HorizontalTile(Tile):
         self.box = pg.rect.Rect((x, y), (SIDE_LARGE, SIDE_SMALL))
         self.inner_box = pg.rect.Rect((x + BORDER_SIZE, y + BORDER_SIZE), (SIDE_LARGE - 2*BORDER_SIZE, SIDE_SMALL - 2*BORDER_SIZE))
         self.side = side
-
-    def draw(self, window):
-        pg.draw.rect(window, Colors.BLACK, self.box)
+    def draw(self, window, selected=False):
+        if selected:
+            pg.draw.rect(window, Colors.SELECTED, self.box)
+        else:
+            pg.draw.rect(window, Colors.BLACK, self.box)
         if self.info is not None:
             pg.draw.rect(window, self.info["color"], self.inner_box)
             if self.info["type"] == "icon":
@@ -94,19 +103,25 @@ class HorizontalTile(Tile):
                     window.blit(Assets.MORTAGED, (centerx - 16, centery - 16))
                 self.draw_players(window, centerx, centery, self.info["players"])
 
-
 class CornerTile(Tile):
     def __init__(self, x, y):
         super().__init__(x, y)
         self.box = pg.rect.Rect((x, y), (SIDE_LARGE, SIDE_LARGE))
         self.inner_box = pg.rect.Rect((x + BORDER_SIZE, y + BORDER_SIZE), (SIDE_LARGE - 2*BORDER_SIZE, SIDE_LARGE - 2*BORDER_SIZE))
-    def draw(self, window):
-        pg.draw.rect(window, Colors.BLACK, self.box)
+    def draw(self, window, selected=False):
+        if selected:
+            pg.draw.rect(window, Colors.SELECTED, self.box)
+        else:
+            pg.draw.rect(window, Colors.BLACK, self.box)
         if self.info is not None and self.info["type"] == "corner":
             pg.draw.rect(window, self.info["color"], self.inner_box)
             window.blit(self.info["image"], self.inner_box)
             if self.info["jail"]:
-                #TODO: DRAW PLAYERS IN JAIL AND OUT
-                pass
+                self.draw_players(window, self.inner_box.right - 40, self.inner_box.top + 40, self.info["jailed"])
+                position_vector = VISIT_OFFSETS[len(self.info["players"])]
+                for i, icon in enumerate(self.info["players"]):
+                    posx, posy = position_vector[i]
+                    centerx, centery = self.inner_box.left + 16, self.inner_box.top + 80
+                    window.blit(Assets.ICONS["SMALL"][icon], (centerx + posx, centery + posy))
             else:
                 self.draw_players(window, self.box.centerx, self.box.centery, self.info["players"])

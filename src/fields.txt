@@ -1,42 +1,42 @@
 # Fields to be imported.
-# Format: Type|Name|Cost|Color|House Price|Tax Values
+# Format: Type|Name|Price|Color|House Price|House Taxes
 C0|Start
-P|Old Kent Rd.|60|brown|50|2,10,30,90,160,250
+P|Old Kent Rd.|60|BROWN|50|2,10,30,90,160,250
 W|Community Chest
-P|Whitechapel Rd.|60|brown|50|4,20,60,180,230,450
+P|Whitechapel Rd.|60|BROWN|50|4,20,60,180,230,450
 T|Income Tax|200
 R|King's Cross station
-P|The Angel Islington|100|light-blue|50|6,30,90,270,400,550
+P|The Angel Islington|100|LIGHT_BLUE|50|6,30,90,270,400,550
 W|Luck
-P|Euston Rd.|100|light-blue|50|6,30,90,270,400,550
-P|Pentonville Rd.|120|light-blue|50|8,40,100,300,450,600
+P|Euston Rd.|100|LIGHT_BLUE|50|6,30,90,270,400,550
+P|Pentonville Rd.|120|LIGHT_BLUE|50|8,40,100,300,450,600
 C1|Jail
-P|Pall Mall|140|magenta|100|10,50,150,450,625,750
-U|Electric Company
-P|Whitehall|140|magenta|100|10,50,150,450,625,750
-P|Northumberland Av.|160|magenta|100|12,60,180,500,700,900
+P|Pall Mall|140|MAGENTA|100|10,50,150,450,625,750
+U|Electricity Company
+P|Whitehall|140|MAGENTA|100|10,50,150,450,625,750
+P|Northumberland Av.|160|MAGENTA|100|12,60,180,500,700,900
 R|Marylebone station
-P|Bow St.|180|orange|100|14,70,200,550,750,950
+P|Bow St.|180|ORANGE|100|14,70,200,550,750,950
 W|Community Chest
-P|Marlborough St.|180|orange|100|14,70,200,550,750,950
-P|Vine St.|200|orange|100|16,80,220,600,800,1000
+P|Marlborough St.|180|ORANGE|100|14,70,200,550,750,950
+P|Vine St.|200|ORANGE|100|16,80,220,600,800,1000
 C2|Free Parking
-P|Strand|220|red|150|18,90,250,700,875,1050
+P|Strand|220|RED|150|18,90,250,700,875,1050
 W|Luck
-P|Fleet St.|220|red|150|18,90,250,700,875,1050
-P|Trafalgar Square|240|red|150|20,100,300,750,925,1100
+P|Fleet St.|220|RED|150|18,90,250,700,875,1050
+P|Trafalgar Square|240|RED|150|20,100,300,750,925,1100
 R|Fenchurch St. station
-P|Leicester Square|260|yellow|150|22,110,330,800,975,1150
-P|Coventry St.|260|yellow|150|22,110,330,800,975,1150
+P|Leicester Square|260|YELLOW|150|22,110,330,800,975,1150
+P|Coventry St.|260|YELLOW|150|22,110,330,800,975,1150
 U|Water Company
-P|Piccadilly|280|yellow|150|24,120,360,850,1025,1200
+P|Piccadilly|280|YELLOW|150|24,120,360,850,1025,1200
 C3|Go to jail!
-P|Regent St.|300|green|200|26,130,390,900,1100,1275
-P|Oxford St.|300|green|200|26,130,390,900,1100,1275
+P|Regent St.|300|GREEN|200|26,130,390,900,1100,1275
+P|Oxford St.|300|GREEN|200|26,130,390,900,1100,1275
 W|Community Chest
-P|Bond St.|320|green|200|28,150,450,1000,1200,1400
+P|Bond St.|320|GREEN|200|28,150,450,1000,1200,1400
 R|Liverpool St. station
 W|Luck
-P|Park Lane|350|blue|200|35,175,500,1100,1300,1500
+P|Park Lane|350|BLUE|200|35,175,500,1100,1300,1500
 T|Luxury Tax|100
-P|Mayfair|400|blue|200|50,200,600,1400,1700,2000
+P|Mayfair|400|BLUE|200|50,200,600,1400,1700,2000

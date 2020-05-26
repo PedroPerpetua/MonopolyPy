@@ -90,6 +90,8 @@ class PropertyField(BuyableField):
         info = {}
         info["type"] = "property"
         info["name"] = self.name
+        info["houses"] = self.houses
+        info["house_price"] = self.house_price
         info["color"] = self.color
         return info
     def do_action(self, player):

@@ -12,7 +12,7 @@ HOUSE_SIZE = 13
 
 PLAYER_POSITIONS_OFFSET = [ "Dummy!",
 							# 1-4 Players
-							[(-int(PLAYER_SIZE/2),-int(PLAYER_SIZE/2))],
+							[(-int(PLAYER_SIZE/2), -int(PLAYER_SIZE/2))],
 							[(-PLAYER_SIZE, -int(PLAYER_SIZE/2)), (0, -int(PLAYER_SIZE/2))],
 							[(-PLAYER_SIZE, -PLAYER_SIZE), (0, -PLAYER_SIZE), (-int(PLAYER_SIZE/2), 0)],
 							[(-PLAYER_SIZE, -PLAYER_SIZE), (0, -PLAYER_SIZE), (-PLAYER_SIZE, 0), (0, 0)],

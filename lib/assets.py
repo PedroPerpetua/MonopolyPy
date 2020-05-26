@@ -6,6 +6,7 @@ class Colors:
 	BG_COLOR = (143, 188, 114)
 	WHITE = (255, 255, 255)
 	BLACK = (0, 0, 0)
+	SELECTED = (204, 204, 0)
 	LIGHT_GRAY = (128, 128, 128)
 	LIGHT_CYAN = (153, 255, 255)
 	BROWN = (51, 25, 0)

@@ -30,12 +30,15 @@ class Game:
 			if field.owner_id is None:
 				info["owner"] = "Unowned"
 				info["value"] = "Price: " + str(field.price)
+				if isinstance(field, PropertyField):
+					info["houses"] = "Houses: " + str(field.houses)
+					info["house_price"] = "House price: " + str(field.house_price) + "€"
 			else:
 				info["owner"] = self.players[field.owner_id].name
 				if isinstance(field, PropertyField):
 					info["value"] = "Tax: " + str(field.house_taxes[field.houses]) + "€"
 					info["houses"] = "Houses: " + str(field.houses)
-					info["house_price"] = "House price:" + str(field.house_price) + "€"
+					info["house_price"] = "House price: " + str(field.house_price) + "€"
 				elif isinstance(field, RailroadField):
 					info["value"] = "Tax: " + str(self.players[field.owner_id].get_rail()) + "€"
 				elif isinstance(field, UtilityField):

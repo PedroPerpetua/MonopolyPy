@@ -1,116 +1,54 @@
 import pygame as pg
- 
-from lib.UI.board_items.icon_tile import IconTile
-from lib.UI.board_items.property_tile import PropertyTile
-from lib.UI.board_items.corner_tile import CornerTile
+from lib.UI.board_items.tile import HorizontalTile, VerticalTile, CornerTile
 from lib.UI.board_items.tooltip import Tooltip
-import lib.UI.board_items.constants as c
 
-# Readability
-XVAR = 0
-YVAR = 1
-
-# Colors
-BORDER_COLOR = BLACK = (0, 0, 0)
-LIGHT_GRAY = (128, 128, 128)
-LIGHT_CYAN = (153, 255, 255)
-WHITE = (255, 255, 255)
-BG_GREEN = (143, 188, 114)
-SELECTED_COLOR = (255, 128, 0)
-
+COORDS = [
+				(602, 602), (546, 602), (490, 602), (434, 602), (378, 602), (322, 602), (266, 602), (210, 602), (154, 602), (98, 602), (0, 602),
+				(0, 546), (0, 490), (0, 434), (0, 378), (0, 322), (0, 266), (0, 210), (0, 154), (0, 98), (0, 0),
+				(98, 0), (154, 0), (210, 0), (266, 0), (322, 0), (378, 0), (434, 0), (490, 0), (546, 0), (602, 0),
+				(602, 98), (602, 154), (602, 210), (602, 266), (602, 322), (602, 378), (602, 434), (602, 490), (602, 546)
+]
 class Board:
-	#Pairs of (x(i, j), y(i, j) corresponding to the offset of LARGE*i + SMALL*j, counting form the top right corner (x,y).
-	POS_VECTORS	= [
-				((1, 9), (1, 9)), ((1, 8), (1, 9)), ((1, 7), (1, 9)), ((1, 6), (1, 9)), ((1, 5), (1, 9)), ((1, 4), (1, 9)), ((1, 3), (1, 9)),
-				((1, 2), (1, 9)), ((1, 1), (1, 9)), ((1, 0), (1, 9)), ((0, 0), (1, 9)), ((0, 0), (1, 8)), ((0, 0), (1, 7)), ((0, 0), (1, 6)),
-				((0, 0), (1, 5)), ((0, 0), (1, 4)), ((0, 0), (1, 3)), ((0, 0), (1, 2)), ((0, 0), (1, 1)), ((0, 0), (1, 0)), ((0, 0), (0, 0)),
-				((1, 0), (0, 0)), ((1, 1), (0, 0)), ((1, 2), (0, 0)), ((1, 3), (0, 0)), ((1, 4), (0, 0)), ((1, 5), (0, 0)), ((1, 6), (0, 0)),
-				((1, 7), (0, 0)), ((1, 8), (0, 0)), ((1, 9), (0, 0)), ((1, 9), (1, 0)), ((1, 9), (1, 1)), ((1, 9), (1, 2)), ((1, 9), (1, 3)),
-				((1, 9), (1, 4)), ((1, 9), (1, 5)), ((1, 9), (1, 6)), ((1, 9), (1, 7)), ((1, 9), (1, 8))
-				]	
-
 	def __init__(self, x, y, control_area, game):
 		self.game = game
 		self.x = x
 		self.y = y
-		self.tiles = self.setup_tiles((x, y))
-
+		self.tiles = []
+		for i in range(40):
+			xcoord, ycoord = x + COORDS[i][0], y + COORDS[i][1]
+			if i in [0, 10, 20, 30]:
+				tile = CornerTile(xcoord, ycoord)
+			if i in range(1, 10):
+				tile = VerticalTile(xcoord, ycoord, 'B')
+			if i in range(11, 20):
+				tile = HorizontalTile(xcoord, ycoord, 'L')
+			if i in range(21, 30):
+				tile = VerticalTile(xcoord, ycoord, 'T')
+			if i in range(31, 40):
+				tile = HorizontalTile(xcoord, ycoord, 'R')
+			tile.update(game.get_fieldInfo(i))
+			self.tiles.append(tile)
 		self.control_box = pg.rect.Rect((x, y), control_area)
-		self.selected_index = None
-		self.tooltip = Tooltip(x, y)
-		
-
-	def setup_tiles(self, coords):
-		fields = []
-		for i in range(40):
-			field_type = self.game.fields[i].get_type()
-			if 0 < i < 10:
-				orientation = "B"
-			elif 10 < i < 20:
-				orientation = "L"
-			elif 20 < i < 30:
-				orientation = "T"
-			else:
-				orientation = "R"
-			
-			vector = Board.POS_VECTORS[i]
-			x = vector[XVAR][0] * c.SIDE_LARGE + vector[XVAR][1] * c.SIDE_SMALL + c.BORDER_SIZE + coords[XVAR]
-			y = vector[YVAR][0] * c.SIDE_LARGE + vector[YVAR][1] * c.SIDE_SMALL + c.BORDER_SIZE + coords[YVAR]
-
-			# Why does python not have switch statements. This is so ugly.
-			if field_type == "property":
-				fields.append(PropertyTile(x, y, orientation))
-			elif field_type == "icon":
-				fields.append(IconTile(x, y, orientation))
-			elif field_type == "corner":
-				fields.append(CornerTile(x, y))
-			else:
-				raise ValueError
-		
-		# We need to give initial values to these tiles
-		for i in range(40):
-			tile = fields[i]
-			tile.update(self.game.get_field(i))
-		return fields
-
-	def get_selected(self):
-		return self.selected_index
-
-	# Drawing functions
+		self.selected = None
+		self.tooltip = Tooltip(x + 112, y + 492)	
 	def update(self, events):
 		tile_hovered = None
 		for i in range(40):
 			tile = self.tiles[i]
-			tile.update(self.game.get_field(i))
+			tile.update(self.game.get_fieldInfo(i))
 			if tile.hovered:
 				tile_hovered = i
 		if tile_hovered is not None:
-			self.tooltip.update(self.game.get_tooltip(tile_hovered))
+			self.tooltip.update_info(self.game.get_tooltipInfo(tile_hovered))
 		else:
-			self.tooltip.update(None)
-
+			self.tooltip.update_info(None)
 		for event in events:
 			if event.type == pg.MOUSEBUTTONDOWN and self.control_box.collidepoint(event.pos):
-				self.selected_index = tile_hovered
-
-
-
+				self.selected = tile_hovered
 	def draw(self, window):
-		# First we draw the border
-		pg.draw.rect(window, BORDER_COLOR, ((self.x, self.y), (c.SIZE, c.SIZE)))
-		side_interior = c.SIZE - 2 * c.SIDE_LARGE
-		pg.draw.rect(window, BG_GREEN, ((self.x + c.SIDE_LARGE, self.y + c.SIDE_LARGE), (side_interior, side_interior)))
-		x, y, w, h = self.tooltip.get_dimensions()
-		pg.draw.rect(window, BORDER_COLOR, ((x - c.BORDER_SIZE, y - c.BORDER_SIZE), (w + 2 * c.BORDER_SIZE, h + 2 * c.BORDER_SIZE)))
-
-		# We also draw the border on the selected tile
-		if self.selected_index is not None:
-			border_rect = self.tiles[self.selected_index].get_border()
-			pg.draw.rect(window, SELECTED_COLOR, border_rect)
-
-		# Then we draw the tiles
 		for i in range(40):
-			self.tiles[i].draw(window)
-
-		# And finally we draw the tooltip
+			if i == self.selected:
+				self.tiles[i].draw(window, True)
+			else:
+				self.tiles[i].draw(window)
 		self.tooltip.draw(window)
