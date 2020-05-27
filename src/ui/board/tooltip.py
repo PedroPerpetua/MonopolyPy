@@ -1,5 +1,5 @@
 import pygame as pg
-from lib.assets import Assets, Colors
+from assets.assets import Assets, Colors
 
 BORDER_SIZE = 1
 

@@ -1,7 +1,7 @@
 from src.game.player import Player
 from src.game.field import Field, BuyableField, PropertyField, RailroadField, UtilityField, import_fields
 
-FIELDS_FILE = "src/fields.txt"
+FIELDS_FILE = "src/fields.dat"
 
 class Game:
 	def __init__(self, id_list=[]):

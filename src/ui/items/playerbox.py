@@ -1,5 +1,5 @@
 import pygame as pg
-from lib.assets import Assets
+from assets.assets import Assets
 
 TEXT_COLOR = BLACK = (0, 0, 0)
 BG_COLOR = LIGHT_GRAY = (153, 153, 153)

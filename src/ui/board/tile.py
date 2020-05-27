@@ -1,5 +1,5 @@
 import pygame as pg
-from lib.assets import Colors, Assets
+from assets.assets import Colors, Assets
 
 SIDE_LARGE = 98
 SIDE_SMALL = 56

@@ -1,6 +1,6 @@
 import pygame as pg
-from lib.assets import Assets, import_assets
-from src.client_screens import StartScreen, ProfileScreen, GameScreen
+from assets.assets import Assets, import_assets
+from src.ui.client_screens import StartScreen, ProfileScreen, GameScreen
 
 WIN_W = 1280
 WIN_H = 720

@@ -1,11 +1,8 @@
-from lib.assets import Assets
+from assets.assets import Assets, Colors
 from socket import getaddrinfo, gaierror
-from lib.UI.items import image, inputbox, textlabel, numberpicker, imagebutton, playerbox
+from src.ui.items import image, inputbox, textlabel, numberpicker, imagebutton, playerbox
 import pygame as pg
 from os import startfile as open_link
-
-BG_COLOR = (143, 188, 114)
-BLACK = (0, 0, 0)
 
 class StartScreen:
 	def __init__(self):
@@ -29,7 +26,7 @@ class StartScreen:
 		self.items["button"]["help"] = imagebutton.ImageButton(203, 245, [Assets.HELP_SELECTED, Assets.HELP_UNSELECTED], True)
 
 	def draw(self, window):
-		window.fill(BG_COLOR)
+		window.fill(Colors.BG_COLOR)
 		for item_type in self.items:
 			for item in self.items[item_type]:
 				self.items[item_type][item].draw(window)
@@ -88,7 +85,7 @@ class HelpScreen:
 		self.items["button"]["return"] = imagebutton.ImageButton(68, 245, [Assets.RETURN_SELECTED, Assets.RETURN_UNSELECTED], True)
 
 	def draw(self, window):
-		window.fill(BG_COLOR)
+		window.fill(Colors.BG_COLOR)
 		for item_type in self.items:
 			for item in self.items[item_type]:
 				self.items[item_type][item].draw(window)
@@ -131,7 +128,7 @@ class QueueScreen:
 				self.items["playerbox"][i] = playerbox.PlayerBox(i, True)
 
 	def draw(self, window):
-		window.fill(BG_COLOR)
+		window.fill(Colors.BG_COLOR)
 		for item_type in self.items:
 			for item in self.items[item_type]:
 				self.items[item_type][item].draw(window)
@@ -173,7 +170,7 @@ class InGameScreen:
 		self.items["button"]["quit"] = imagebutton.ImageButton(92, 245, [Assets.QUIT_SELECTED, Assets.QUIT_UNSELECTED], True)
 
 	def draw(self, window):
-		window.fill(BG_COLOR)
+		window.fill(Colors.BG_COLOR)
 		for item_type in self.items:
 			for item in self.items[item_type]:
 				self.items[item_type][item].draw(window)
@@ -212,8 +209,8 @@ class ErrorBox:
 		self.box = pg.rect.Rect((50, 130), (200, 40))
 	
 	def draw(self, window):
-		pg.draw.rect(window, BLACK, ((self.box.left - 3, self.box.top - 3), (self.box.width + 6, self.box.height + 6)))
-		pg.draw.rect(window, BG_COLOR, self.box)
+		pg.draw.rect(window, Colors.BLACK, ((self.box.left - 3, self.box.top - 3), (self.box.width + 6, self.box.height + 6)))
+		pg.draw.rect(window, Colors.BG_COLOR, self.box)
 		for item_type in self.items:
 			for item in self.items[item_type]:
 				self.items[item_type][item].draw(window)

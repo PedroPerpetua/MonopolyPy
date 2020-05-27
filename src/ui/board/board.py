@@ -1,6 +1,6 @@
 import pygame as pg
-from lib.UI.board_items.tile import HorizontalTile, VerticalTile, CornerTile
-from lib.UI.board_items.tooltip import Tooltip
+from src.ui.board.tile import HorizontalTile, VerticalTile, CornerTile
+from src.ui.board.tooltip import Tooltip
 
 COORDS = [
 				(602, 602), (546, 602), (490, 602), (434, 602), (378, 602), (322, 602), (266, 602), (210, 602), (154, 602), (98, 602), (0, 602),
@@ -8,6 +8,7 @@ COORDS = [
 				(98, 0), (154, 0), (210, 0), (266, 0), (322, 0), (378, 0), (434, 0), (490, 0), (546, 0), (602, 0),
 				(602, 98), (602, 154), (602, 210), (602, 266), (602, 322), (602, 378), (602, 434), (602, 490), (602, 546)
 ]
+
 class Board:
 	def __init__(self, x, y, control_area, game):
 		self.game = game

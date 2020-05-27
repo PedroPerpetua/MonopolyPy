@@ -1,13 +1,10 @@
-from lib.assets import Assets
-from lib.UI.items import image, inputbox, textlabel, imagebutton, iconselector
-from lib.UI.board_items import board
+from assets.assets import Assets, Colors
+from src.ui.items import image, inputbox, textlabel, imagebutton, iconselector
+from src.ui.board.board import Board
 from os import startfile as open_link
 from src.client import Client
 from src.exceptions import WrongPasswordException, ServerFullException, ServerOfflineException
 import pygame as pg
-
-BG_COLOR = (143, 188, 114)
-BLACK = (0, 0, 0)
 
 class StartScreen:
 	def __init__(self):
@@ -28,7 +25,7 @@ class StartScreen:
 		self.items["button"]["help"] = imagebutton.ImageButton(794, 572, [Assets.HELP_SELECTED, Assets.HELP_UNSELECTED], True)
 
 	def draw(self, window):
-		window.fill(BG_COLOR)
+		window.fill(Colors.BG_COLOR)
 		for item_type in self.items:
 			for item in self.items[item_type]:
 				self.items[item_type][item].draw(window)
@@ -87,7 +84,7 @@ class HelpScreen:
 		self.items["button"]["return"] = imagebutton.ImageButton(476, 572, [Assets.RETURN_SELECTED, Assets.RETURN_UNSELECTED], True)
 
 	def draw(self, window):
-		window.fill(BG_COLOR)
+		window.fill(Colors.BG_COLOR)
 		for item_type in self.items:
 			for item in self.items[item_type]:
 				self.items[item_type][item].draw(window)
@@ -134,7 +131,7 @@ class ProfileScreen:
 		self.wait_text = textlabel.TextLabel(322, 602, "Waiting for game to start.", 36, Assets.PIXEL)
 
 	def draw(self, window):
-		window.fill(BG_COLOR)
+		window.fill(Colors.BG_COLOR)
 		for item_type in self.items:
 			for item in self.items[item_type]:
 				self.items[item_type][item].draw(window)
@@ -181,10 +178,10 @@ class GameScreen:
 		self.client = client
 		self.items = {}
 		self.items["game_items"] = {}
-		self.items["game_items"]["board"] = board.Board(10, 10, (720, 720), self.client.game)
+		self.items["game_items"]["board"] = Board(10, 10, (720, 720), self.client.game)
 
 	def draw(self, window):
-		window.fill(BG_COLOR)
+		window.fill(Colors.BG_COLOR)
 		for item_type in self.items:
 			for item in self.items[item_type]:
 				self.items[item_type][item].draw(window)
@@ -219,8 +216,8 @@ class ErrorBox:
 		self.box = pg.rect.Rect((340, 310), (600, 100))
 	
 	def draw(self, window):
-		pg.draw.rect(window, BLACK, ((self.box.left - 10, self.box.top - 10), (self.box.width + 20, self.box.height + 20)))
-		pg.draw.rect(window, BG_COLOR, self.box)
+		pg.draw.rect(window, Colors.BLACK, ((self.box.left - 10, self.box.top - 10), (self.box.width + 20, self.box.height + 20)))
+		pg.draw.rect(window, Colors.BG_COLOR, self.box)
 		for item_type in self.items:
 			for item in self.items[item_type]:
 				self.items[item_type][item].draw(window)

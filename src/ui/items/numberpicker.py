@@ -1,5 +1,5 @@
 import pygame as pg
-from lib.assets import Assets
+from assets.assets import Assets
 
 
 BG_COLOR = WHITE = (255, 255, 255)

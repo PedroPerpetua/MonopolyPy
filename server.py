@@ -1,7 +1,7 @@
 from threading import Thread
 import pygame as pg
-from lib.assets import Assets, import_assets
-from src.server_screens import StartScreen, QueueScreen, InGameScreen
+from assets.assets import Assets, import_assets
+from src.ui.server_screens import StartScreen, QueueScreen, InGameScreen
 from src.server import Server
 
 WIN_W = 300

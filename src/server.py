@@ -3,10 +3,8 @@ import select
 from threading import Thread
 import json
 import time
-
-from lib import colors as cs
-from src.logger import write_log
 from src.game.game import Game
+from src.logger import Logger
 
 MESSAGE_SIZE = 8192
 
@@ -15,6 +13,7 @@ class Server:
 		self.active = False
 		self.addr = (host, port)
 		self.password = password
+		self.logger = Logger()
 		self.max_players = max_players
 		self.clients = [None for _ in range(max_players)]
 		self.available_icons = ["Dummy", True, True, True, True, True, True, True, True]
@@ -61,13 +60,13 @@ class Server:
 		if isinstance(client, Client):
 			self.remove_client(client)
 			client.shutdown()
-			print(cs.green(f"[CLIENT {client}]") + f" DISCONNECTED: {message}")
+			self.logger.log(f"Client {client}", f"DISCONNECTED: {message}")
 
 	def send_data(self, client, data):
 		try:
 			message = json.dumps(data)
 			client.conn.sendall(message.encode())
-			print(cs.red("[SERVER]") + f" sent <{data}> to {client}.")
+			self.logger.log(f"Client {client}", f"sent <{data}> to {client}.")
 		except socket.error as se:
 			self.disconnect(client, se)
 
@@ -95,17 +94,17 @@ class Server:
 			self.close_server(se)
 	
 		# Main loop looking for connections
-		print(cs.red("[SERVER]") + "Awaiting connections...")
+		self.logger.log("Server", "Awaiting connections...")
 		while self.active and not self.check_ready():
 			try:
 				conn, addr = server_socket.accept()
 				client = Client(conn, addr, self)
-				print(cs.yellow("[CONNECTION]") + f" New connection @ {client}.")
+				self.logger.log("Connection", f"New connection @ {client}")
 				if self.check_full():
 					self.send_data(client, -2)
 					self.disconnect(client, "SERVER FULL")
 				elif self.authenticate(client):
-					print(cs.yellow("[CONNECTION]") + " Passed authentication!")
+					self.logger.log("Connection", "Passed authentication!")
 					self.add_client(client)
 					self.send_data(client, 0)
 					client.start()
@@ -119,7 +118,7 @@ class Server:
 
 		# If the loop finished because everyone is ready...
 		if self.active:
-			print(cs.red("[Server]") + " All players are ready!")
+			self.logger.log("Server", "All players are ready!")
 			server_socket.close()
 
 	# Main thread handling communication and requests
@@ -127,12 +126,12 @@ class Server:
 		pass
 
 	def close_server(self, message):
-		print(cs.red("[SERVER]") + " Server closing: " + str(message))
+		self.logger.log("Server", f"Server closing: {str(message)}")
 		self.active = False
 		for client in self.clients:
 			if client is not None:
 				self.disconnect(client, str(message))
-		write_log(self.requests)
+		self.logger.write()
 
 	def start_game(self):
 		self.in_game = True
@@ -182,7 +181,7 @@ class Client:
 			data = self.conn.recv(MESSAGE_SIZE).decode()
 			if data != "":
 				data = json.loads(data)
-				print(cs.green(f"[CLIENT {self}]") + f" received <{data}>.")
+				self.server.logger.log(f"Client {self}", f"received <{data}>")
 				return data
 			else:
 				self.server.disconnect(self, "Empty string received.")
@@ -209,7 +208,7 @@ class Client:
 
 	# Main client thread
 	def processing_thread(self):
-		print(cs.green(f"[CLIENT {self}]") + " Started processing thread.")
+		self.server.logger.log(f"Client {self}", "Started processing thread")
 		self.get_tag()
 		while self.active:
 			if self.conn:
@@ -218,7 +217,7 @@ class Client:
 					received = self.receive_data()
 					if received and self.server.game:
 						self.server.requests.append([self.tag, received])
-		print(cs.green(f"[CLIENT {self}]") + " Finished processing thread.")
+		self.server.logger.log(f"Client {self}", "Finished processing thread")
 
 
 	# Python functions

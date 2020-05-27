@@ -1,4 +1,4 @@
-from lib.assets import Assets, Colors
+from assets.assets import Assets, Colors
 
 # Colors in RGB
 
